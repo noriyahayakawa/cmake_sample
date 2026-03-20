@@ -20,7 +20,7 @@
 ```powershell
 git init
 git submodule add https://github.com/microsoft/vcpkg.git vcpkg
-.cpkgootstrap-vcpkg.bat
+./vcpkg/bootstrap-vcpkg.bat
 ```
 
 ## ビルド
