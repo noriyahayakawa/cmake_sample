@@ -1,0 +1,8 @@
+{
+    "name": "sample",
+    "version-string": "0.1",
+    "dependencies": [
+        "boost",
+        "gtest"
+    ]
+}
