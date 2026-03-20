@@ -26,7 +26,6 @@ target_link_libraries(tests
 include(GoogleTest)
 gtest_discover_tests(tests)
 
-
 find_program(CLANG_FORMAT_EXE NAMES clang-format)
 if(CLANG_FORMAT_EXE)
   file(GLOB_RECURSE ALL_CXX_SOURCE_FILES src/*.cpp tests/*.cpp)
