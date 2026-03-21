@@ -23,6 +23,7 @@
 ├── src/
 │   └── main.cpp
 ├── tests/
+│   ├── CMakeLists.txt
 │   └── test_main.cpp
 └── vcpkg/              # git submodule
 ```
@@ -38,9 +39,8 @@
 | CMake | 3.23+ | |
 | Ninja | 最新推奨 | |
 
-> **注意:** `CMakePresets.json` にはコンパイラの絶対パス (`C:/Program Files/LLVM/...`,
-> `C:/Program Files/Microsoft Visual Studio/2022/Community/...`) がハードコードされています。
-> 環境が異なる場合は該当箇所を修正してください。
+> **注意:** `msvc-*` プリセットは `cl.exe` を名前解決で使用します。
+> MSVC 環境変数を設定するため、`tools/cmake-msvc-x64.cmd` 経由の構成/ビルド（または Developer Command Prompt）を使ってください。
 
 ### Linux
 | ツール | バージョン | 備考 |
@@ -124,8 +124,11 @@ cmake --build --preset clang-release
 cmake --preset clangcl-debug-tidy
 cmake --build --preset clangcl-debug-tidy
 
-# clang-format (src/ と tests/ 以下を一括整形)
+# clang-format (app: src/ と include/ を整形)
 cmake --build --preset format
+
+# core / tests の整形ターゲット
+cmake --build --preset clangcl-debug --target core-format tests-format
 ```
 
 ### Linux

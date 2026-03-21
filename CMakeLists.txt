@@ -17,24 +17,11 @@ target_compile_definitions(app PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )
 
-include(CTest)
-enable_testing()
-find_package(GTest CONFIG REQUIRED)
-add_executable(tests tests/test_main.cpp)
-target_compile_definitions(tests PRIVATE
-    $<$<CONFIG:Debug>:MY_DEBUG>
-)
- 
-target_link_libraries(tests
-  PRIVATE
-    GTest::gtest
-    GTest::gtest_main
-)
-include(GoogleTest)
-gtest_discover_tests(tests)
-
 find_program(CLANG_FORMAT_EXE NAMES clang-format)
 if(CLANG_FORMAT_EXE)
-  file(GLOB_RECURSE ALL_CXX_SOURCE_FILES src/*.cpp tests/*.cpp)
-  add_custom_target(format COMMAND ${CLANG_FORMAT_EXE} -i ${ALL_CXX_SOURCE_FILES})
+  # app のソースとヘッダを clang-format で整形するターゲット
+  file(GLOB_RECURSE APP_CXX_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp include/*.hpp)
+  add_custom_target(format COMMAND ${CLANG_FORMAT_EXE} -i ${APP_CXX_SOURCE_FILES})
 endif()
+
+add_subdirectory(tests)
