@@ -7,7 +7,7 @@
       "command": "cmake",
       "args": [
         "--preset",
-        "clangcl-debug"
+        "clangcl-debug-static"
       ],
       "problemMatcher": [],
       "group": "build"
@@ -18,7 +18,7 @@
       "command": "cmake",
       "args": [
         "--preset",
-        "clangcl-release"
+        "clangcl-release-static"
       ],
       "problemMatcher": [],
       "group": "build"
@@ -30,7 +30,7 @@
       "args": [
         "--build",
         "--preset",
-        "clangcl-debug"
+        "clangcl-debug-static"
       ],
       "problemMatcher": [
         "$msCompile"
@@ -47,7 +47,7 @@
       "args": [
         "--build",
         "--preset",
-        "clangcl-release"
+        "clangcl-release-static"
       ],
       "problemMatcher": [
         "$msCompile"
@@ -63,7 +63,7 @@
       "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
       "args": [
         "--preset",
-        "msvc-debug"
+        "msvc-debug-static"
       ],
       "problemMatcher": []
     },
@@ -73,7 +73,7 @@
       "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
       "args": [
         "--preset",
-        "msvc-release"
+        "msvc-release-static"
       ],
       "problemMatcher": []
     },
@@ -84,7 +84,7 @@
       "args": [
         "--build",
         "--preset",
-        "msvc-debug"
+        "msvc-debug-static"
       ],
       "problemMatcher": [
         "$msCompile"
@@ -98,7 +98,7 @@
       "args": [
         "--build",
         "--preset",
-        "msvc-release"
+        "msvc-release-static"
       ],
       "problemMatcher": [
         "$msCompile"

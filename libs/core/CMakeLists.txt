@@ -23,6 +23,20 @@ target_compile_definitions(core PRIVATE
 find_package(Boost CONFIG REQUIRED)
 target_link_libraries(core PUBLIC Boost::boost)
 
+# --- DLL export/import マクロの自動生成 ---
+include(GenerateExportHeader)  # CMake組み込みモジュール[1](https://cmake.org/cmake/help/latest/module/GenerateExportHeader.html)
+
+# 生成ファイル名を固定（ソース側で include しやすい）
+generate_export_header(core
+  BASE_NAME CORE
+  EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/core_export.h
+)
+# 生成された core_export.h を利用側も include できるようにする
+target_include_directories(core
+  PUBLIC
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 find_program(CLANG_FORMAT_EXE NAMES clang-format)
 if(CLANG_FORMAT_EXE)
   # core ライブラリ配下のコードを clang-format で整形するターゲット

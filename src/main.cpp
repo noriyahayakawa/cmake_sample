@@ -1,4 +1,6 @@
-#include <iostream>
-#include "core.hpp"
+#include "main.hpp"
 
-int main() { std::cout << core::hello(); }
+int main(int argc, char *argv[]) {
+  std::cout << core::hello();
+  return 0;
+}
