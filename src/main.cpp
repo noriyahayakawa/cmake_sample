@@ -1,2 +1,4 @@
 #include <iostream>
-int main() { std::cout << "hello\n"; }
+#include "core.hpp"
+
+int main() { std::cout << core::hello(); }

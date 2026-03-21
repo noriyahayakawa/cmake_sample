@@ -9,15 +9,22 @@ project(sample LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(app src/main.cpp)
+add_subdirectory(libs/core)
 
-find_package(Boost CONFIG REQUIRED)
-target_link_libraries(app PRIVATE Boost::boost)
+add_executable(app src/main.cpp)
+target_link_libraries(app PRIVATE core)
+target_compile_definitions(app PRIVATE
+    $<$<CONFIG:Debug>:MY_DEBUG>
+)
 
 include(CTest)
 enable_testing()
 find_package(GTest CONFIG REQUIRED)
 add_executable(tests tests/test_main.cpp)
+target_compile_definitions(tests PRIVATE
+    $<$<CONFIG:Debug>:MY_DEBUG>
+)
+ 
 target_link_libraries(tests
   PRIVATE
     GTest::gtest
