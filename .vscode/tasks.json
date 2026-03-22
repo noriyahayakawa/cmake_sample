@@ -221,7 +221,7 @@
       "group": "build"
     },
     {
-      "label": "CMake: clang-tidy (clang-cl Debug)",
+      "label": "CMake: 静的解析 (clang-cl Debug)",
       "type": "shell",
       "command": "cmake",
       "args": [
