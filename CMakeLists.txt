@@ -13,6 +13,11 @@ project(sample LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(ENABLE_AUTO_CLANG_FORMAT "Run clang-format before building targets" OFF)
+include(GNUInstallDirs)
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Install path prefix" FORCE)
+endif()
 
 include(CTest)
 enable_testing()
@@ -34,6 +39,10 @@ target_compile_options(app
 )
 target_compile_definitions(app PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
+)
+
+install(TARGETS app
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 find_program(CLANG_FORMAT_EXE NAMES clang-format)

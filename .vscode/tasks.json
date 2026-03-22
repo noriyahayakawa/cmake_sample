@@ -228,6 +228,111 @@
     },
 
     {
+      "label": "CMake: インストール (clangcl-debug-static)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/clangcl-debug-static", "--prefix", "${workspaceFolder}/out/install/clangcl-debug-static"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clangcl-debug-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/clangcl-debug-dll", "--prefix", "${workspaceFolder}/out/install/clangcl-debug-dll"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clangcl-release-static)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/clangcl-release-static", "--prefix", "${workspaceFolder}/out/install/clangcl-release-static"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clangcl-release-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/clangcl-release-dll", "--prefix", "${workspaceFolder}/out/install/clangcl-release-dll"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (msvc-debug-static)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/msvc-debug-static", "--prefix", "${workspaceFolder}/out/install/msvc-debug-static"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (msvc-debug-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/msvc-debug-dll", "--prefix", "${workspaceFolder}/out/install/msvc-debug-dll"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (msvc-release-static)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/msvc-release-static", "--prefix", "${workspaceFolder}/out/install/msvc-release-static"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (msvc-release-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/msvc-release-dll", "--prefix", "${workspaceFolder}/out/install/msvc-release-dll"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clangcl-debug-tidy)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/clangcl-debug-tidy", "--prefix", "${workspaceFolder}/out/install/clangcl-debug-tidy"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clangcl-debug-tidy-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/clangcl-debug-tidy-dll", "--prefix", "${workspaceFolder}/out/install/clangcl-debug-tidy-dll"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clang-debug)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/clang-debug", "--prefix", "${workspaceFolder}/out/install/clang-debug"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clang-release)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/clang-release", "--prefix", "${workspaceFolder}/out/install/clang-release"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clang-debug-tidy)",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--install", "${workspaceFolder}/out/build/clang-debug-tidy", "--prefix", "${workspaceFolder}/out/install/clang-debug-tidy"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+
+    {
       "label": "CTest: テスト (clangcl-debug-static)",
       "type": "shell",
       "command": "ctest",
