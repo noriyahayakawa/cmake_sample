@@ -1,46 +1,47 @@
 
-# CMake + clang-cl / MSVC サンプル（Windows）
+# CMake + clang-cl / MSVC サンプル
 
 ## 概要
-社内展開用の **完成版テンプレート** です。
+このリポジトリは、Windows/Linux 両対応の C++ テンプレートです。
 
-- CMakePresets.json による **ビルド設定の統一**
-- **clang-cl / MSVC(cl)** 切替対応
-- **clang-tidy / clang-format** 統合
-- **Boost / GoogleTest** は vcpkg (manifest mode) で管理
-- C++20 対応
+- CMakePresets.json によるビルド設定の統一
+- clang-cl / MSVC(cl) / clang の切り替え
+- clang-tidy / clang-format 統合
+- Boost / GoogleTest を vcpkg (manifest mode) で管理
+- C++23 ベース
 
 ## ディレクトリ構成
-```
+```text
 .
 ├── CMakeLists.txt
 ├── CMakePresets.json
-├── vcpkg.json          # 依存: boost, gtest
+├── vcpkg.json
 ├── libs/
-│   └── core/           # 共有ライブラリ
-│       ├── include/
-│       └── src/
+│   └── core/
 ├── src/
 │   └── main.cpp
 ├── tests/
 │   ├── CMakeLists.txt
 │   └── test_main.cpp
-└── vcpkg/              # git submodule
+├── .vscode/
+│   └── tasks.json
+└── vcpkg/
 ```
 
 ## 前提
 
 ### Windows
-| ツール | バージョン | 備考 |
-|--------|-----------|------|
-| Windows | 10 / 11 | |
-| Visual Studio 2022 | Community / Build Tools | MSVC v143 (VC++ ツール) |
-| LLVM | 最新推奨 | clang-cl, clang-tidy, clang-format |
-| CMake | 3.23+ | |
-| Ninja | 最新推奨 | |
+| ツール | バージョン | 備考 | winget コマンド |
+|--------|-----------|------|-----------------|
+| Windows | 10 / 11 | | (OS のため対象外) |
+| Visual Studio 2022 | Community / Build Tools | MSVC v143 | `winget install --id Microsoft.VisualStudio.2022.BuildTools -e --override "--wait --quiet --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"` |
+| LLVM | 最新推奨 | clang-cl, clang-tidy, clang-format | `winget install --id LLVM.LLVM -e` |
+| CMake | 3.23+ | | `winget install --id Kitware.CMake -e` |
+| Ninja | 最新推奨 | | `winget install --id Ninja-build.Ninja -e` |
 
-> **注意:** `msvc-*` プリセットは `cl.exe` を名前解決で使用します。
-> MSVC 環境変数を設定するため、`tools/cmake-msvc-x64.cmd` 経由の構成/ビルド（または Developer Command Prompt）を使ってください。
+注意:
+- msvc-* プリセットは cl.exe を使用します。
+- VS Code タスクでは tools/cmake-msvc-x64.cmd 経由で MSVC 環境を設定します。
 
 ### Linux
 | ツール | バージョン | 備考 |
@@ -49,94 +50,164 @@
 | LLVM / Clang | 最新推奨 | clang, clang++, clang-tidy, clang-format |
 | CMake | 3.23+ | |
 | Ninja | 最新推奨 | |
-| curl, zip, unzip, tar | | vcpkg の依存ツール |
+| curl, zip, unzip, tar | | vcpkg 依存 |
 
 ```bash
-# Ubuntu / Debian 系
 sudo apt install -y clang clang-tidy clang-format cmake ninja-build \
                     curl zip unzip tar pkg-config
 ```
 
 ## セットアップ
 ```powershell
-# テンプレートをコピー後、vcpkg サブモジュールを初期化
-git submodule add https://github.com/microsoft/vcpkg.git vcpkg
+# 既に submodule 登録済みの場合
+git submodule update --init --recursive
 ./vcpkg/bootstrap-vcpkg.bat
 ```
 
-## ビルド
+## 推奨実行順
 
-### プリセット一覧
-
-#### Windows
-| プリセット | コンパイラ | 種別 |
-|-----------|-----------|------|
-| `clangcl-debug` | clang-cl | Debug |
-| `clangcl-release` | clang-cl | Release |
-| `msvc-debug` | MSVC (cl) | Debug |
-| `msvc-release` | MSVC (cl) | Release |
-
-#### Linux
-| プリセット | コンパイラ | 種別 |
-|-----------|-----------|------|
-| `clang-debug` | clang / clang++ | Debug |
-| `clang-release` | clang / clang++ | Release |
-
-ビルド成果物は `out/build/<プリセット名>/` に出力されます。
-
-### clang-cl – Windows (Debug)
+### Windows (clang-cl, static Debug)
 ```powershell
-cmake --preset clangcl-debug
-cmake --build --preset clangcl-debug
-ctest --preset clangcl-debug
+# 1) 構成
+cmake --preset clangcl-debug-static
+
+# 2) リビルド（clean-first）
+cmake --build --preset clangcl-debug-static --clean-first
+
+# 3) テスト
+ctest --preset clangcl-debug-static
 ```
 
-### clang-cl – Windows (Release)
+### Windows (MSVC, static Debug)
 ```powershell
-cmake --preset clangcl-release
-cmake --build --preset clangcl-release
+# 1) 構成
+tools/cmake-msvc-x64.cmd --preset msvc-debug-static
+
+# 2) リビルド（clean-first）
+tools/cmake-msvc-x64.cmd --build --preset msvc-debug-static --clean-first
+
+# 3) テスト
+ctest --preset msvc-debug-static
 ```
 
-### MSVC に切り替える – Windows
-```powershell
-cmake --preset msvc-debug
-cmake --build --preset msvc-debug
+### Linux (clang, Debug)
+```bash
+# 1) 構成
+cmake --preset clang-debug
+
+# 2) リビルド（clean-first）
+cmake --build --preset clang-debug --clean-first
+
+# 3) テスト
+ctest --preset clang-debug
 ```
 
-### clang – Linux (Debug)
+### VS Code タスクを使う場合
+
+1. CMake: 構成 (...) を実行
+2. CMake: リビルド (...) を実行
+3. CTest: テスト (...) を実行
+
+補足:
+- clang-cl / MSVC の preset では、ENABLE_AUTO_CLANG_FORMAT が ON のため、ビルド前に clang-format が自動実行されます。
+- clean のみ必要な場合は CMake: クリーン (...) タスクを使用してください。
+
+## プリセット
+
+### configure/build preset
+
+#### Windows (clang-cl)
+- clangcl-debug-static
+- clangcl-debug-dll
+- clangcl-release-static
+- clangcl-release-dll
+
+#### Windows (MSVC)
+- msvc-debug-static
+- msvc-debug-dll
+- msvc-release-static
+- msvc-release-dll
+
+#### Linux (clang)
+- clang-debug
+- clang-release
+
+#### tidy 用 build preset
+- clangcl-debug-tidy
+- clangcl-debug-tidy-dll
+- clang-debug-tidy
+
+#### format 用 build preset
+- format (Windows)
+- format-linux (Linux)
+
+### test preset
+- clangcl-debug-static
+- clangcl-debug-dll
+- clangcl-release-static
+- clangcl-release-dll
+- msvc-debug-static
+- msvc-debug-dll
+- msvc-release-static
+- msvc-release-dll
+- clang-debug
+- clang-release
+- clangcl-debug (エイリアス)
+
+## ビルドとテスト
+
+### clang-cl (Windows, Debug static)
+```powershell
+cmake --preset clangcl-debug-static
+cmake --build --preset clangcl-debug-static
+ctest --preset clangcl-debug-static
+```
+
+### clang-cl (Windows, Release static)
+```powershell
+cmake --preset clangcl-release-static
+cmake --build --preset clangcl-release-static
+ctest --preset clangcl-release-static
+```
+
+### MSVC (Windows, Debug static)
+```powershell
+tools/cmake-msvc-x64.cmd --preset msvc-debug-static
+tools/cmake-msvc-x64.cmd --build --preset msvc-debug-static
+ctest --preset msvc-debug-static
+```
+
+### clang (Linux, Debug)
 ```bash
 cmake --preset clang-debug
 cmake --build --preset clang-debug
 ctest --preset clang-debug
 ```
 
-### clang – Linux (Release)
-```bash
-cmake --preset clang-release
-cmake --build --preset clang-release
-```
+成果物は out/build/<preset名>/ に出力されます。
 
-## 静的解析 / 整形
+## clang-format 自動実行
 
-### Windows
+- CMake オプション ENABLE_AUTO_CLANG_FORMAT が ON のとき、app/tests ビルド前に format ターゲットを実行します。
+- format ターゲットは format-app + core-format + tests-format の集約です。
+- clang-format が見つからない場合は警告を出してスキップします。
+
+明示的に無効化する例:
 ```powershell
-# clang-tidy
-cmake --preset clangcl-debug-tidy
-cmake --build --preset clangcl-debug-tidy
-
-# clang-format (app: src/ と include/ を整形)
-cmake --build --preset format
-
-# core / tests の整形ターゲット
-cmake --build --preset clangcl-debug --target core-format tests-format
+cmake --preset clangcl-debug-static -DENABLE_AUTO_CLANG_FORMAT=OFF
 ```
 
-### Linux
-```bash
-# clang-tidy
-cmake --preset clang-debug-tidy
-cmake --build --preset clang-debug-tidy
+## VS Code タスク
 
-# clang-format
-cmake --build --preset format-linux
-```
+.vscode/tasks.json には以下が定義されています。
+
+- 構成: clang-cl / MSVC (Debug, Release)
+- ビルド: clang-cl / MSVC (Debug, Release)
+- クリーン: clang-cl / MSVC (Debug, Release)
+- リビルド: clang-cl / MSVC (Debug, Release)
+- テスト: CTest (clang-cl Debug)
+- 補助: clang-tidy, フォーマット
+
+例:
+- CMake: リビルド (clang-cl Debug)
+- CMake: クリーン (MSVC Release)
