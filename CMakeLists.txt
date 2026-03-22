@@ -1,6 +1,10 @@
 
 cmake_minimum_required(VERSION 3.23)
 
+if (MSVC)
+  add_compile_options(/utf-8)
+endif()
+
 if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
 endif()
@@ -15,7 +19,8 @@ enable_testing()
 
 add_subdirectory(libs/core)
 
-add_executable(app src/main.cpp)
+file(GLOB_RECURSE APP_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp)
+add_executable(app ${APP_SOURCE_FILES})
 target_link_libraries(app PRIVATE core)
 target_include_directories(app
   PRIVATE
@@ -23,6 +28,7 @@ target_include_directories(app
 )
 target_compile_options(app
   PRIVATE
+    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/EHsc>
     $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/utf-8>
     $<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-finput-charset=UTF-8>
 )

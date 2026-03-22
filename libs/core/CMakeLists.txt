@@ -8,23 +8,27 @@ endif()
 project(sample_core LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
- 
-add_library(core src/core.cpp)
+
+file(GLOB_RECURSE CORE_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp)
+add_library(core ${CORE_SOURCE_FILES})
 target_compile_options(core
   PRIVATE
+    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/EHsc>
     $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/utf-8>
     $<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-finput-charset=UTF-8>
 )
 target_include_directories(core
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 target_compile_definitions(core PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )
 
-find_package(Boost CONFIG REQUIRED)
-target_link_libraries(core PUBLIC Boost::boost)
+find_package(Boost CONFIG REQUIRED COMPONENTS headers program_options exception)
+target_link_libraries(core PUBLIC Boost::boost Boost::program_options Boost::exception)
 
 # --- DLL export/import マクロの自動生成 ---
 include(GenerateExportHeader)  # CMake組み込みモジュール[1](https://cmake.org/cmake/help/latest/module/GenerateExportHeader.html)

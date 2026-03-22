@@ -5,4 +5,5 @@
 #endif
 
 #include "core.hpp"
+#include "options.hpp"
 #include <iostream>

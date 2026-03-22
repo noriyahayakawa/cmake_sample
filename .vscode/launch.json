@@ -2,52 +2,52 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug app (clangcl-debug)",
+      "name": "Debug app (clangcl-debug-static)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/out/build/clangcl-debug/app.exe",
+      "program": "${workspaceFolder}/out/build/clangcl-debug-static/app.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (clang-cl Debug)"
+      "preLaunchTask": "CMake: ビルド (clangcl-debug-static)"
     },
     {
-      "name": "Debug tests (clangcl-debug)",
+      "name": "Debug tests (clangcl-debug-static)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/out/build/clangcl-debug/tests.exe",
+      "program": "${workspaceFolder}/out/build/clangcl-debug-static/tests/tests.exe",
       "args": ["--gtest_filter=*"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (clang-cl Debug)"
+      "preLaunchTask": "CMake: ビルド (clangcl-debug-static)"
     },
     {
-      "name": "Debug app (msvc-debug)",
+      "name": "Debug app (msvc-debug-static)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/out/build/msvc-debug/app.exe",
+      "program": "${workspaceFolder}/out/build/msvc-debug-static/app.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (MSVC Debug)"
+      "preLaunchTask": "CMake: ビルド (msvc-debug-static)"
     },
     {
-      "name": "Debug tests (msvc-debug)",
+      "name": "Debug tests (msvc-debug-static)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/out/build/msvc-debug/tests.exe",
+      "program": "${workspaceFolder}/out/build/msvc-debug-static/tests/tests.exe",
       "args": ["--gtest_filter=*"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (MSVC Debug)"
+      "preLaunchTask": "CMake: ビルド (msvc-debug-static)"
     }
   ]
 }

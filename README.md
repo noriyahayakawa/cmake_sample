@@ -24,7 +24,8 @@
 │   ├── CMakeLists.txt
 │   └── test_main.cpp
 ├── .vscode/
-│   └── tasks.json
+│   ├── tasks.json
+│   └── launch.json
 └── vcpkg/
 ```
 
@@ -104,13 +105,13 @@ ctest --preset clang-debug
 
 ### VS Code タスクを使う場合
 
-1. CMake: 構成 (...) を実行
-2. CMake: リビルド (...) を実行
-3. CTest: テスト (...) を実行
+1. CMake: 構成 (<preset名>) を実行
+2. CMake: ビルド (<preset名>) を実行
+3. CTest: テスト (<preset名>) を実行
 
 補足:
 - clang-cl / MSVC の preset では、ENABLE_AUTO_CLANG_FORMAT が ON のため、ビルド前に clang-format が自動実行されます。
-- clean のみ必要な場合は CMake: クリーン (...) タスクを使用してください。
+- フォーマットのみ実行したい場合は CMake: フォーマット (Windows) または CMake: フォーマット (Linux) を使用してください。
 
 ## プリセット
 
@@ -201,13 +202,23 @@ cmake --preset clangcl-debug-static -DENABLE_AUTO_CLANG_FORMAT=OFF
 
 .vscode/tasks.json には以下が定義されています。
 
-- 構成: clang-cl / MSVC (Debug, Release)
-- ビルド: clang-cl / MSVC (Debug, Release)
-- クリーン: clang-cl / MSVC (Debug, Release)
-- リビルド: clang-cl / MSVC (Debug, Release)
-- テスト: CTest (clang-cl Debug)
-- 補助: 静的解析, フォーマット
+- 構成: CMakePresets.json の configurePresets（hidden を除く）を網羅
+- ビルド: CMakePresets.json の buildPresets を網羅
+- テスト: CMakePresets.json の testPresets（hidden を除く）を網羅
+- 補助: フォーマット (format / format-linux)
 
 例:
-- CMake: リビルド (clang-cl Debug)
-- CMake: クリーン (MSVC Release)
+- CMake: 構成 (clangcl-debug-static)
+- CMake: ビルド (msvc-release-dll)
+- CTest: テスト (clangcl-release-static)
+
+## VS Code デバッグ
+
+.vscode/launch.json には以下のデバッグ構成が含まれます。
+
+- Debug app (clangcl-debug-static)
+- Debug tests (clangcl-debug-static)
+- Debug app (msvc-debug-static)
+- Debug tests (msvc-debug-static)
+
+これらは対応する `preLaunchTask` を実行してから起動されます。
