@@ -6,16 +6,19 @@ if(POLICY CMP0167)
 endif()
 
 project(sample_core LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+ 
 add_library(core src/core.cpp)
-
+target_compile_options(core
+  PRIVATE
+    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/utf-8>
+    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-finput-charset=UTF-8>
+)
 target_include_directories(core
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-) 
-
+)
 target_compile_definitions(core PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )
@@ -29,7 +32,7 @@ include(GenerateExportHeader)  # CMake組み込みモジュール[1](https://cma
 # 生成ファイル名を固定（ソース側で include しやすい）
 generate_export_header(core
   BASE_NAME CORE
-  EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/core_export.h
+  EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/core_export.hpp
 )
 # 生成された core_export.h を利用側も include できるようにする
 target_include_directories(core

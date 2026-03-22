@@ -5,23 +5,27 @@ if(POLICY CMP0167)
 endif()
 
 project(sample_core_tests LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(CTest)
-enable_testing()
 find_package(GTest CONFIG REQUIRED)
 add_executable(tests test_main.cpp)
-target_compile_definitions(tests PRIVATE
-    $<$<CONFIG:Debug>:MY_DEBUG>
-)
- 
+
 target_link_libraries(tests
   PRIVATE
     GTest::gtest
     GTest::gtest_main
     core
 )
+target_compile_options(tests
+  PRIVATE
+    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/utf-8>
+    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-finput-charset=UTF-8>
+)
+target_compile_definitions(tests PRIVATE
+    $<$<CONFIG:Debug>:MY_DEBUG>
+)
+ 
 include(GoogleTest)
 gtest_discover_tests(tests)
 

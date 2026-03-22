@@ -53,9 +53,66 @@
         "$msCompile"
       ],
       "group": {
-        "kind": "build",
-        "isDefault": true
+        "kind": "build"
       }
+    },
+    {
+      "label": "CMake: クリーン (clang-cl Debug)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clangcl-debug-static",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: クリーン (clang-cl Release)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clangcl-release-static",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (clang-cl Debug)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clangcl-debug-static",
+        "--clean-first"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (clang-cl Release)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clangcl-release-static",
+        "--clean-first"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
     },
     {
       "label": "CMake: 構成 (MSVC Debug)",
@@ -106,6 +163,64 @@
       "group": "build"
     },
     {
+      "label": "CMake: クリーン (MSVC Debug)",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
+      "args": [
+        "--build",
+        "--preset",
+        "msvc-debug-static",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: クリーン (MSVC Release)",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
+      "args": [
+        "--build",
+        "--preset",
+        "msvc-release-static",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (MSVC Debug)",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
+      "args": [
+        "--build",
+        "--preset",
+        "msvc-debug-static",
+        "--clean-first"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (MSVC Release)",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
+      "args": [
+        "--build",
+        "--preset",
+        "msvc-release-static",
+        "--clean-first"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
       "label": "CMake: clang-tidy (clang-cl Debug)",
       "type": "shell",
       "command": "cmake",
@@ -120,7 +235,7 @@
       "group": "test"
     },
     {
-      "label": "CMake: clang-format",
+      "label": "CMake: フォーマット",
       "type": "shell",
       "command": "cmake",
       "args": [
@@ -132,12 +247,12 @@
       "group": "none"
     },
     {
-      "label": "CTest: run tests (clang-cl Debug)",
+      "label": "CTest: テスト (clang-cl Debug)",
       "type": "shell",
       "command": "ctest",
       "args": [
         "--preset",
-        "clangcl-debug"
+        "clangcl-debug-static"
       ],
       "problemMatcher": [],
       "group": "test"
