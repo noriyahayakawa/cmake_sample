@@ -10,7 +10,8 @@
         "CMAKE_CXX_STANDARD": "20",
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_FEATURE_FLAGS": "manifests",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_AUTO_CLANG_FORMAT": "ON"
       }
     },
     {
@@ -23,7 +24,9 @@
         "rhs": "Windows"
       },
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-windows"
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "CMAKE_C_FLAGS": "/utf-8",
+        "CMAKE_CXX_FLAGS": "/utf-8"
       }
     },
     {
@@ -36,7 +39,9 @@
         "rhs": "Linux"
       },
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-linux"
+        "VCPKG_TARGET_TRIPLET": "x64-linux",
+        "CMAKE_C_FLAGS": "-finput-charset=UTF-8 -fexec-charset=UTF-8",
+        "CMAKE_CXX_FLAGS": "-finput-charset=UTF-8 -fexec-charset=UTF-8"
       }
     },
     {
@@ -56,7 +61,8 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_C_COMPILER": "clang-cl.exe",
         "CMAKE_CXX_COMPILER": "clang-cl.exe",
-        "BUILD_SHARED_LIBS": "ON"      }
+        "BUILD_SHARED_LIBS": "ON"
+      }
     },
     {
       "name": "clangcl-release-static",
@@ -234,6 +240,69 @@
       "targets": [
         "format"
       ]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "base-test",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "clangcl-debug-static",
+      "inherits": "base-test",
+      "configurePreset": "clangcl-debug-static"
+    },
+    {
+      "name": "clangcl-debug-dll",
+      "inherits": "base-test",
+      "configurePreset": "clangcl-debug-dll"
+    },
+    {
+      "name": "clangcl-release-static",
+      "inherits": "base-test",
+      "configurePreset": "clangcl-release-static"
+    },
+    {
+      "name": "clangcl-release-dll",
+      "inherits": "base-test",
+      "configurePreset": "clangcl-release-dll"
+    },
+    {
+      "name": "msvc-debug-static",
+      "inherits": "base-test",
+      "configurePreset": "msvc-debug-static"
+    },
+    {
+      "name": "msvc-debug-dll",
+      "inherits": "base-test",
+      "configurePreset": "msvc-debug-dll"
+    },
+    {
+      "name": "msvc-release-static",
+      "inherits": "base-test",
+      "configurePreset": "msvc-release-static"
+    },
+    {
+      "name": "msvc-release-dll",
+      "inherits": "base-test",
+      "configurePreset": "msvc-release-dll"
+    },
+    {
+      "name": "clang-debug",
+      "inherits": "base-test",
+      "configurePreset": "clang-debug"
+    },
+    {
+      "name": "clang-release",
+      "inherits": "base-test",
+      "configurePreset": "clang-release"
+    },
+    {
+      "name": "clangcl-debug",
+      "inherits": "clangcl-debug-static"
     }
   ]
 }
