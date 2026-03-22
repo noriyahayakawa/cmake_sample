@@ -91,8 +91,6 @@ vcpkg_installed.vs/
 # clang-tidy / analysis
 # ============================
 *.plist
-*.yaml
-*.yml
 
 # ============================
 # Testing
