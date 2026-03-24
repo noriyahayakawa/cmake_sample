@@ -16,14 +16,19 @@
 .
 ├── CMakeLists.txt
 ├── CMakePresets.json
+├── etc/
+│   └── app.jsonc
 ├── vcpkg.json
 ├── libs/
 │   └── core/
+│       ├── include/
+│       └── src/
 ├── src/
 │   └── main.cpp
 ├── tests/
 │   ├── CMakeLists.txt
-│   └── test_main.cpp
+│   └── src/
+│       └── test_main.cpp
 ├── .vscode/
 │   ├── tasks.json
 │   └── launch.json
@@ -35,8 +40,8 @@
 ### Windows
 | ツール | バージョン | 備考 | winget コマンド |
 |--------|-----------|------|-----------------|
-| Windows | 10 / 11 | | (OS のため対象外) |
-| Visual Studio 2022 | Community / Build Tools | MSVC v143 | `winget install --id Microsoft.VisualStudio.2022.BuildTools -e --override "--wait --quiet --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"` |
+| Windows | 11 | | (OS のため対象外) |
+| Visual Studio 2022 Build Tools | Build Tools | MSVC v143 | `winget install --id Microsoft.VisualStudio.2022.BuildTools -e --override "--wait --quiet --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"` |
 | LLVM | 最新推奨 | clang-cl, clang-tidy, clang-format | `winget install --id LLVM.LLVM -e` |
 | CMake | 3.23+ | | `winget install --id Kitware.CMake -e` |
 | Ninja | 最新推奨 | | `winget install --id Ninja-build.Ninja -e` |
@@ -44,6 +49,11 @@
 注意:
 - msvc-* プリセットは cl.exe を使用します。
 - VS Code タスクでは tools/cmake-msvc-x64.cmd 経由で MSVC 環境を設定します。
+- Visual Studio Build Tools は無償でインストールできますが、利用条件は Visual Studio ライセンス条項に従います。
+- Build Tools の商用利用可否は組織形態・利用形態・契約条件で変わる場合があるため、導入前に最新の Visual Studio ライセンスを確認してください。
+- Visual Studio Professional / Enterprise なども、適切なライセンスがある環境では利用できます。
+- Visual Studio Community を利用する場合は、組織規模や利用目的によってライセンス制限が適用される可能性があります。
+- 商用利用時は Visual Studio の最新ライセンス条項を必ず確認してください（本 README は法的助言ではありません）。
 
 ### Linux
 | ツール | バージョン | 備考 |
@@ -217,6 +227,12 @@ cmake --install out/build/clangcl-debug-static --prefix out/install/clangcl-debu
     - 実行ファイル: `bin/`
     - ライブラリ: `lib/`
     - ヘッダ: `include/`
+    - 設定ファイル: `etc/`（プロジェクトルートの `etc/` をインストール）
+
+- 実行時ディレクトリへの設定ファイルコピー
+
+`etc/` ディレクトリが存在する場合、`app` のビルド後に `copy_directory` で
+`out/build/<preset名>/` 配下（`app.exe` と同じ場所）へコピーされます。
 
 ## clang-format 自動実行
 
@@ -253,5 +269,8 @@ cmake --preset clangcl-debug-static -DENABLE_AUTO_CLANG_FORMAT=OFF
 - Debug tests (clangcl-debug-static)
 - Debug app (msvc-debug-static)
 - Debug tests (msvc-debug-static)
+
+補足:
+- app のデバッグ構成は `-i app.jsonc` を既定引数として渡します。
 
 これらは対応する `preLaunchTask` を実行してから起動されます。

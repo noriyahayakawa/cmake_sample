@@ -24,6 +24,8 @@ enable_testing()
 
 add_subdirectory(libs/core)
 
+set(APP_ETC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/etc")
+
 file(GLOB_RECURSE APP_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp)
 add_executable(app ${APP_SOURCE_FILES})
 target_link_libraries(app PRIVATE core)
@@ -40,6 +42,18 @@ target_compile_options(app
 target_compile_definitions(app PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )
+
+if(EXISTS "${APP_ETC_DIR}")
+  add_custom_command(TARGET app POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${APP_ETC_DIR}"
+            "$<TARGET_FILE_DIR:app>"
+  )
+
+  install(DIRECTORY "${APP_ETC_DIR}/"
+    DESTINATION etc
+  )
+endif()
 
 install(TARGETS app
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

@@ -5,5 +5,7 @@
 #endif
 
 #include "core.hpp"
-#include "options.hpp"
+#include "exceptions/my_error.hpp"
+#include "exceptions/show_help.hpp"
+#include "settings/options.hpp"
 #include <iostream>

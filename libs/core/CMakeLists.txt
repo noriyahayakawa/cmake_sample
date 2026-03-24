@@ -11,6 +11,23 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(GNUInstallDirs)
 
 file(GLOB_RECURSE CORE_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB_RECURSE CORE_PUBLIC_HEADER_FILES CONFIGURE_DEPENDS include/*.h include/*.hpp)
+file(GLOB_RECURSE CORE_PRIVATE_HEADER_FILES CONFIGURE_DEPENDS src/*.h src/*.hpp)
+
+set(CORE_PUBLIC_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+foreach(core_header IN LISTS CORE_PUBLIC_HEADER_FILES)
+  get_filename_component(core_header_dir "${core_header}" DIRECTORY)
+  list(APPEND CORE_PUBLIC_INCLUDE_DIRS "${core_header_dir}")
+endforeach()
+list(REMOVE_DUPLICATES CORE_PUBLIC_INCLUDE_DIRS)
+
+set(CORE_PRIVATE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src")
+foreach(core_header IN LISTS CORE_PRIVATE_HEADER_FILES)
+  get_filename_component(core_header_dir "${core_header}" DIRECTORY)
+  list(APPEND CORE_PRIVATE_INCLUDE_DIRS "${core_header_dir}")
+endforeach()
+list(REMOVE_DUPLICATES CORE_PRIVATE_INCLUDE_DIRS)
+
 add_library(core ${CORE_SOURCE_FILES})
 target_compile_options(core
   PRIVATE
@@ -20,17 +37,17 @@ target_compile_options(core
 )
 target_include_directories(core
   PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    ${CORE_PUBLIC_INCLUDE_DIRS}
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CORE_PRIVATE_INCLUDE_DIRS}
 )
 target_compile_definitions(core PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )
 
-find_package(Boost CONFIG REQUIRED COMPONENTS headers program_options exception)
-target_link_libraries(core PUBLIC Boost::boost Boost::program_options Boost::exception)
+find_package(Boost CONFIG REQUIRED COMPONENTS headers program_options system filesystem exception json)
+target_link_libraries(core PUBLIC Boost::boost Boost::program_options Boost::filesystem Boost::exception Boost::json)
 
 # --- DLL export/import マクロの自動生成 ---
 include(GenerateExportHeader)  # CMake組み込みモジュール[1](https://cmake.org/cmake/help/latest/module/GenerateExportHeader.html)
