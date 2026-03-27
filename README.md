@@ -78,6 +78,36 @@ git submodule update --init --recursive
 
 ## 推奨実行順
 
+### core サブディレクトリ単体ビルド
+
+`libs/core/CMakePresets.json` を追加しているため、`libs/core` へ移動して
+サブディレクトリ単体で構成・ビルドできます。
+
+#### Windows (clang-cl, static Debug)
+```powershell
+cd libs/core
+cmake --preset clangcl-debug-static
+cmake --build --preset clangcl-debug-static --clean-first
+```
+
+#### Windows (MSVC, static Debug)
+```powershell
+cd libs/core
+../../tools/cmake-msvc-x64.cmd --preset msvc-debug-static
+../../tools/cmake-msvc-x64.cmd --build --preset msvc-debug-static --clean-first
+```
+
+#### Linux (clang, Debug)
+```bash
+cd libs/core
+cmake --preset clang-debug
+cmake --build --preset clang-debug --clean-first
+```
+
+補足:
+- core 単体プリセットのビルド出力先は `libs/core/out/build/<preset名>/`。
+- core 単体プリセットは tests ターゲットを含みません。
+
 ### Windows (clang-cl, static Debug)
 ```powershell
 # 1) 構成

@@ -1,0 +1,220 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_CXX_STANDARD": "23",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/../../vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_FEATURE_FLAGS": "manifests",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "base-windows",
+      "hidden": true,
+      "inherits": "base",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "CMAKE_C_FLAGS": "/utf-8",
+        "CMAKE_CXX_FLAGS": "/utf-8"
+      }
+    },
+    {
+      "name": "base-linux",
+      "hidden": true,
+      "inherits": "base",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux",
+        "CMAKE_C_FLAGS": "-finput-charset=UTF-8 -fexec-charset=UTF-8",
+        "CMAKE_CXX_FLAGS": "-finput-charset=UTF-8 -fexec-charset=UTF-8"
+      }
+    },
+    {
+      "name": "clangcl-debug-static",
+      "inherits": "base-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "clang-cl.exe",
+        "BUILD_SHARED_LIBS": "OFF"
+      }
+    },
+    {
+      "name": "clangcl-debug-dll",
+      "inherits": "base-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "clang-cl.exe",
+        "BUILD_SHARED_LIBS": "ON"
+      }
+    },
+    {
+      "name": "clangcl-release-static",
+      "inherits": "base-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "clang-cl.exe",
+        "BUILD_SHARED_LIBS": "OFF"
+      }
+    },
+    {
+      "name": "clangcl-release-dll",
+      "inherits": "base-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "clang-cl.exe",
+        "BUILD_SHARED_LIBS": "ON"
+      }
+    },
+    {
+      "name": "msvc-debug-static",
+      "inherits": "base-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe",
+        "BUILD_SHARED_LIBS": "OFF"
+      }
+    },
+    {
+      "name": "msvc-debug-dll",
+      "inherits": "base-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe",
+        "BUILD_SHARED_LIBS": "ON"
+      }
+    },
+    {
+      "name": "msvc-release-static",
+      "inherits": "base-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe",
+        "BUILD_SHARED_LIBS": "OFF"
+      }
+    },
+    {
+      "name": "msvc-release-dll",
+      "inherits": "base-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe",
+        "BUILD_SHARED_LIBS": "ON"
+      }
+    },
+    {
+      "name": "clangcl-debug-tidy-static",
+      "inherits": "clangcl-debug-static",
+      "cacheVariables": {
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+      }
+    },
+    {
+      "name": "clangcl-debug-tidy-dll",
+      "inherits": "clangcl-debug-dll",
+      "cacheVariables": {
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+      }
+    },
+    {
+      "name": "clang-debug",
+      "inherits": "base-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "clang-release",
+      "inherits": "base-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "clang-debug-tidy",
+      "inherits": "clang-debug",
+      "cacheVariables": {
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "clangcl-debug-static",
+      "configurePreset": "clangcl-debug-static"
+    },
+    {
+      "name": "clangcl-debug-dll",
+      "configurePreset": "clangcl-debug-dll"
+    },
+    {
+      "name": "clangcl-release-static",
+      "configurePreset": "clangcl-release-static"
+    },
+    {
+      "name": "clangcl-release-dll",
+      "configurePreset": "clangcl-release-dll"
+    },
+    {
+      "name": "msvc-debug-static",
+      "configurePreset": "msvc-debug-static"
+    },
+    {
+      "name": "msvc-debug-dll",
+      "configurePreset": "msvc-debug-dll"
+    },
+    {
+      "name": "msvc-release-static",
+      "configurePreset": "msvc-release-static"
+    },
+    {
+      "name": "msvc-release-dll",
+      "configurePreset": "msvc-release-dll"
+    },
+    {
+      "name": "clangcl-debug-tidy-static",
+      "configurePreset": "clangcl-debug-tidy-static"
+    },
+    {
+      "name": "clangcl-debug-tidy-dll",
+      "configurePreset": "clangcl-debug-tidy-dll"
+    },
+    {
+      "name": "clang-debug",
+      "configurePreset": "clang-debug"
+    },
+    {
+      "name": "clang-release",
+      "configurePreset": "clang-release"
+    },
+    {
+      "name": "clang-debug-tidy",
+      "configurePreset": "clang-debug-tidy"
+    }
+  ]
+}
