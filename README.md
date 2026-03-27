@@ -126,12 +126,13 @@ cmake --install out/build/clang-debug --prefix out/install/clang-debug
 ### VS Code タスクを使う場合
 
 1. CMake: 構成 (<preset名>) を実行
-2. CMake: ビルド (<preset名>) を実行
-3. CTest: テスト (<preset名>) を実行
+2. CMake: リビルド (<preset名>) を実行（または CMake: ビルド）
+3. CTest: テスト (<preset名>) を実行（対応プリセットのみ）
 4. CMake: インストール (<preset名>) を実行（必要な場合）
 
 補足:
 - clang-cl / MSVC の preset では、ENABLE_AUTO_CLANG_FORMAT が ON のため、ビルド前に clang-format が自動実行されます。
+- clean のみ実行したい場合は CMake: クリーン (<preset名>) を使用してください。
 - フォーマットのみ実行したい場合は CMake: フォーマット (Windows) または CMake: フォーマット (Linux) を使用してください。
 
 ## プリセット
@@ -174,35 +175,34 @@ cmake --install out/build/clang-debug --prefix out/install/clang-debug
 - msvc-release-dll
 - clang-debug
 - clang-release
-- clangcl-debug (エイリアス)
 
 ## ビルドとテスト
 
 ### clang-cl (Windows, Debug static)
 ```powershell
 cmake --preset clangcl-debug-static
-cmake --build --preset clangcl-debug-static
+cmake --build --preset clangcl-debug-static --clean-first
 ctest --preset clangcl-debug-static
 ```
 
 ### clang-cl (Windows, Release static)
 ```powershell
 cmake --preset clangcl-release-static
-cmake --build --preset clangcl-release-static
+cmake --build --preset clangcl-release-static --clean-first
 ctest --preset clangcl-release-static
 ```
 
 ### MSVC (Windows, Debug static)
 ```powershell
 tools/cmake-msvc-x64.cmd --preset msvc-debug-static
-tools/cmake-msvc-x64.cmd --build --preset msvc-debug-static
+tools/cmake-msvc-x64.cmd --build --preset msvc-debug-static --clean-first
 ctest --preset msvc-debug-static
 ```
 
 ### clang (Linux, Debug)
 ```bash
 cmake --preset clang-debug
-cmake --build --preset clang-debug
+cmake --build --preset clang-debug --clean-first
 ctest --preset clang-debug
 ```
 
@@ -251,13 +251,17 @@ cmake --preset clangcl-debug-static -DENABLE_AUTO_CLANG_FORMAT=OFF
 
 - 構成: CMakePresets.json の configurePresets（hidden を除く）を網羅
 - ビルド: CMakePresets.json の buildPresets を網羅
+- クリーン: 各 build preset に対応する clean タスクを網羅
+- リビルド: `クリーン -> ビルド` を順次実行するタスクを網羅
 - テスト: CMakePresets.json の testPresets（hidden を除く）を網羅
 - インストール: 各 build preset に対応する install タスクを網羅
 - 補助: フォーマット (format / format-linux)
 
 例:
 - CMake: 構成 (clangcl-debug-static)
+- CMake: リビルド (clangcl-debug-static)
 - CMake: ビルド (msvc-release-dll)
+- CMake: クリーン (clang-release)
 - CTest: テスト (clangcl-release-static)
 - CMake: インストール (clangcl-debug-static)
 
@@ -272,5 +276,6 @@ cmake --preset clangcl-debug-static -DENABLE_AUTO_CLANG_FORMAT=OFF
 
 補足:
 - app のデバッグ構成は `-i app.jsonc` を既定引数として渡します。
+- すべてのデバッグ構成は `preLaunchTask` として `CMake: リビルド (...)` を実行してから起動されます。
 
 これらは対応する `preLaunchTask` を実行してから起動されます。

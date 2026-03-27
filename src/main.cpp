@@ -1,5 +1,51 @@
 #include "main.hpp"
 
+namespace logging = boost::log;
+namespace expr = boost::log::expressions;
+namespace keywords = boost::log::keywords;
+
+/**
+ * @brief Boost.Log の初期設定を行う。
+ * @details
+ * - 共通属性を登録する。
+ * - 標準エラー出力向けのコンソール sink を生成し、`info` 以上を出力する。
+ * - ローテーション付きファイル sink を生成し、`trace` 以上を出力する。
+ * -
+ * ファイルログの出力フォーマットは時刻、行番号、重大度、スレッドID、メッセージを含む。
+ * - グローバル属性として `ThreadID` を追加する。
+ */
+static void init_logging() {
+  logging::add_common_attributes();
+
+  auto console_sink = logging::add_console_log(
+      std::clog, keywords::format =
+                     (expr::stream << "[" << logging::trivial::severity << "]"
+                                   << ": " << expr::smessage));
+
+  console_sink->set_filter(logging::trivial::severity >=
+                           logging::trivial::info);
+
+  auto file_sink = logging::add_file_log(
+      keywords::file_name = "logs/app_%Y%m%d_%H%M%S_%N.log",
+      keywords::rotation_size = 10 * 1024 * 1024, keywords::auto_flush = true,
+      keywords::format =
+          (expr::stream
+           << expr::format_date_time<boost::posix_time::ptime>(
+                  "TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
+           << " <" << expr::attr<unsigned int>("LineID") << ">"
+           << " [" << logging::trivial::severity << "]"
+           << " ("
+           << expr::attr<boost::log::attributes::current_thread_id::value_type>(
+                  "ThreadID")
+           << ")"
+           << ": " << expr::smessage));
+
+  file_sink->set_filter(logging::trivial::severity >= logging::trivial::trace);
+
+  logging::core::get()->add_global_attribute(
+      "ThreadID", logging::attributes::current_thread_id());
+}
+
 /**
  * @brief アプリケーションのエントリポイント。
  * @param argc コマンドライン引数の個数。
@@ -32,6 +78,7 @@ int main(int argc, char *argv[]) {
 #endif
 
   try {
+    init_logging();
     core::settings::options::instance().store(argc, argv);
     if (!core::settings::options::instance().read_input_file()) {
       std::cerr << "Failed to read input file." << std::endl;
@@ -49,13 +96,13 @@ int main(int argc, char *argv[]) {
     }
     return 0;
   } catch (const boost::exception &e) {
-    std::cerr << boost::diagnostic_information(e) << std::endl;
+    BOOST_LOG_TRIVIAL(fatal) << boost::diagnostic_information(e) << std::endl;
     return 1;
   } catch (const std::exception &e) {
-    std::cerr << "Error: " << e.what() << std::endl;
+    BOOST_LOG_TRIVIAL(fatal) << "Error: " << e.what() << std::endl;
     return 2;
   } catch (...) {
-    std::cerr << "Unknown error occurred." << std::endl;
+    BOOST_LOG_TRIVIAL(fatal) << "Unknown error occurred." << std::endl;
     return 3;
   }
 

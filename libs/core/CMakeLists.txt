@@ -46,8 +46,14 @@ target_compile_definitions(core PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )
 
-find_package(Boost CONFIG REQUIRED COMPONENTS headers program_options system filesystem exception json)
-target_link_libraries(core PUBLIC Boost::boost Boost::program_options Boost::filesystem Boost::exception Boost::json)
+find_package(Boost CONFIG REQUIRED COMPONENTS headers program_options filesystem json)
+target_link_libraries(core
+  PUBLIC
+    Boost::headers
+    Boost::filesystem
+    Boost::json
+    Boost::program_options
+)
 
 # --- DLL export/import マクロの自動生成 ---
 include(GenerateExportHeader)  # CMake組み込みモジュール[1](https://cmake.org/cmake/help/latest/module/GenerateExportHeader.html)

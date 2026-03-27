@@ -299,10 +299,6 @@
       "name": "clang-release",
       "inherits": "base-test",
       "configurePreset": "clang-release"
-    },
-    {
-      "name": "clangcl-debug",
-      "inherits": "clangcl-debug-static"
     }
   ]
 }

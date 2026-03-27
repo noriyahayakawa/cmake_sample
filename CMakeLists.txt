@@ -24,11 +24,13 @@ enable_testing()
 
 add_subdirectory(libs/core)
 
+find_package(Boost CONFIG REQUIRED COMPONENTS log log_setup)
+
 set(APP_ETC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/etc")
 
 file(GLOB_RECURSE APP_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp)
 add_executable(app ${APP_SOURCE_FILES})
-target_link_libraries(app PRIVATE core)
+target_link_libraries(app PRIVATE core Boost::log Boost::log_setup)
 target_include_directories(app
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include

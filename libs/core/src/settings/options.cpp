@@ -2,21 +2,37 @@
 #include "exceptions/my_error.hpp"
 #include "exceptions/show_help.hpp"
 #include <array>
-#include <boost/json.hpp>
 #include <fstream>
 #include <stdexcept>
-#include <system_error>
 
 namespace core::settings {
 
 namespace json = boost::json;
 
+/**
+ * @brief options のデフォルトコンストラクタ。
+ * @details
+ * コマンドラインオプション定義を初期化し、`--help` と `--input` を登録する。
+ * `--input` の既定値は `input.jsonc`。
+ */
 options::options() : desc_("利用可能なオプション") {
   desc_.add_options()("help,h", "ヘルプを表示")(
       "input,i", po::value<fs::path>()->default_value("input.jsonc"),
       "入力ファイル");
 }
 
+/**
+ * @brief コマンドライン引数を解析して入力ファイルパスを確定する。
+ * @param argc 引数個数。
+ * @param argv 引数配列。
+ * @details
+ * - 実行ファイルの絶対パスを保持する。
+ * - 位置引数として入力ファイルを1件受け付ける。
+ * - `--help` 指定時はヘルプメッセージを保持した `show_help` 例外を送出する。
+ * - 入力ファイルが相対パスの場合は実行ファイル配置ディレクトリ基準で解決する。
+ * - 指定ファイルが存在しない場合は `../etc` を探索し、見つからなければ
+ * `my_error` を送出する。
+ */
 void options::store(int argc, char *argv[]) {
 
   executable_path_ = fs::absolute(argv[0]);
@@ -56,6 +72,16 @@ void options::store(int argc, char *argv[]) {
   }
 }
 
+/**
+ * @brief 入力ファイルを JSON として読み込み、共通設定を更新する。
+ * @return 読み込み成功時は `true`。
+ * @details
+ * - バイナリモードでファイルを開く。
+ * - ストリームパーサへ分割入力する。
+ * - 先頭チャンクのみ UTF-8 BOM を検出した場合に除去する。
+ * - `commons` キーが存在する場合、`commons_` を `value_to` で変換して更新する。
+ * - 例外発生時は `my_error` に変換して再送出する。
+ */
 bool options::read_input_file() {
   try {
     std::ifstream ifs(input_file_path_.string(), std::ios::binary);
@@ -81,7 +107,6 @@ bool options::read_input_file() {
       const char *data = buffer.data();
       std::size_t size = static_cast<std::size_t>(read);
 
-      // ---- BOM 除去（先頭チャンクのみ）----
       if (first_chunk) {
         first_chunk = false;
         if (size >= 3 && static_cast<unsigned char>(data[0]) == 0xEF &&
@@ -119,12 +144,22 @@ bool options::read_input_file() {
   }
 }
 
+/**
+ * @brief オプション定義のヘルプ文字列を生成する。
+ * @return `options_description` を整形した文字列。
+ */
 std::string options::help_text() {
   std::ostringstream oss;
   oss << desc_;
   return oss.str();
 }
 
+/**
+ * @brief 例外を使わず通常ファイルかどうかを判定する。
+ * @param p 判定対象パス。
+ * @param ec 判定時のエラーコード出力。
+ * @return 通常ファイルなら `true`、それ以外は `false`。
+ */
 bool options::is_regular_file_nothrow(const fs::path &p,
                                       boost::system::error_code &ec) {
   ec.clear();

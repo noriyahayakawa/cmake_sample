@@ -11,7 +11,7 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (clangcl-debug-static)"
+      "preLaunchTask": "CMake: リビルド (clangcl-debug-static)"
     },
     {
       "name": "Debug tests (clangcl-debug-static)",
@@ -23,7 +23,7 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (clangcl-debug-static)"
+      "preLaunchTask": "CMake: リビルド (clangcl-debug-static)"
     },
     {
       "name": "Debug app (msvc-debug-static)",
@@ -35,7 +35,7 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (msvc-debug-static)"
+      "preLaunchTask": "CMake: リビルド (msvc-debug-static)"
     },
     {
       "name": "Debug tests (msvc-debug-static)",
@@ -47,7 +47,7 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (msvc-debug-static)"
+      "preLaunchTask": "CMake: リビルド (msvc-debug-static)"
     }
   ]
 }
