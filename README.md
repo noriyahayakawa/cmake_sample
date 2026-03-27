@@ -46,6 +46,14 @@
 | CMake | 3.23+ | | `winget install --id Kitware.CMake -e` |
 | Ninja | 最新推奨 | | `winget install --id Ninja-build.Ninja -e` |
 
+一括インストール:
+```powershell
+winget install --id Microsoft.VisualStudio.2022.BuildTools -e --override "--wait --quiet --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+winget install --id LLVM.LLVM -e
+winget install --id Kitware.CMake -e
+winget install --id Ninja-build.Ninja -e
+```
+
 注意:
 - msvc-* プリセットは cl.exe を使用します。
 - VS Code タスクでは tools/cmake-msvc-x64.cmd 経由で MSVC 環境を設定します。
@@ -56,14 +64,15 @@
 - 商用利用時は Visual Studio の最新ライセンス条項を必ず確認してください（本 README は法的助言ではありません）。
 
 ### Linux
-| ツール | バージョン | 備考 |
-|--------|-----------|------|
-| Ubuntu 22.04+ など | | |
-| LLVM / Clang | 最新推奨 | clang, clang++, clang-tidy, clang-format |
-| CMake | 3.23+ | |
-| Ninja | 最新推奨 | |
-| curl, zip, unzip, tar | | vcpkg 依存 |
+| ツール | バージョン | 備考 | apt コマンド |
+|--------|-----------|------|-------------|
+| Ubuntu 22.04+ など | | | (OS のため対象外) |
+| LLVM / Clang | 最新推奨 | clang, clang++, clang-tidy, clang-format | `sudo apt install -y clang clang-tidy clang-format` |
+| CMake | 3.23+ | | `sudo apt install -y cmake` |
+| Ninja | 最新推奨 | | `sudo apt install -y ninja-build` |
+| curl, zip, unzip, tar, pkg-config | | vcpkg 依存 | `sudo apt install -y curl zip unzip tar pkg-config` |
 
+一括インストール:
 ```bash
 sudo apt install -y clang clang-tidy clang-format cmake ninja-build \
                     curl zip unzip tar pkg-config
