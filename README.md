@@ -284,6 +284,47 @@ cmake --install out/build/clangcl-debug-static --prefix out/install/clangcl-debu
 cmake --preset clangcl-debug-static -DENABLE_AUTO_CLANG_FORMAT=OFF
 ```
 
+## APIドキュメント生成 (Doxygen)
+
+このリポジトリではルートに `Doxyfile` を配置し、CMake ターゲット `doc` で API ドキュメントを生成できます。
+
+### 追加で必要なツール
+
+- Doxygen
+- Graphviz (クラス図・コールグラフを出す場合)
+
+### Windows インストール例
+
+```powershell
+winget install --id DimitriVanHeesch.Doxygen -e
+winget install --id Graphviz.Graphviz -e
+```
+
+### Linux インストール例
+
+```bash
+sudo apt install -y doxygen graphviz
+```
+
+### 生成コマンド
+
+```powershell
+# 1) 通常どおり configure
+cmake --preset clangcl-debug-static
+
+# 2) Doxygen ドキュメント生成
+cmake --build --preset clangcl-debug-static --target doc
+```
+
+出力先:
+
+- HTML: `out/docs/html/index.html`
+
+補足:
+
+- Doxygen が未インストールの場合、`doc` ターゲットは作成されません。
+- 対象ソースや出力設定はルートの `Doxyfile` で調整できます。
+
 ## VS Code タスク
 
 .vscode/tasks.json には以下が定義されています。

@@ -46,13 +46,16 @@ target_compile_definitions(core PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )
 
-find_package(Boost CONFIG REQUIRED COMPONENTS headers program_options filesystem json)
+find_package(Boost CONFIG REQUIRED COMPONENTS headers program_options filesystem json asio log log_setup)
 target_link_libraries(core
   PUBLIC
     Boost::headers
     Boost::filesystem
     Boost::json
     Boost::program_options
+    Boost::log
+    Boost::log_setup
+    Boost::asio
 )
 
 # --- DLL export/import マクロの自動生成 ---

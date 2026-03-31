@@ -73,6 +73,18 @@ endif()
 
 add_subdirectory(tests)
 
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+  add_custom_target(doc
+    COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generate API documentation with Doxygen"
+    VERBATIM
+  )
+else()
+  message(STATUS "Doxygen was not found. 'doc' target is unavailable.")
+endif()
+
 if(TARGET format AND TARGET core-format)
   add_dependencies(format core-format)
 endif()

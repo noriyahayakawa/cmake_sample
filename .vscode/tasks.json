@@ -969,6 +969,34 @@
       ],
       "problemMatcher": [],
       "group": "none"
+    },
+    {
+      "label": "CMake: ドキュメント生成 (Windows)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "msvc-debug-static",
+        "--target",
+        "doc"
+      ],
+      "problemMatcher": [],
+      "group": "none"
+    },
+    {
+      "label": "CMake: ドキュメント生成 (Linux)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clang-debug",
+        "--target",
+        "doc"
+      ],
+      "problemMatcher": [],
+      "group": "none"
     }
   ]
 }
