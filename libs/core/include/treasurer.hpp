@@ -12,7 +12,7 @@ namespace core {
 /**
  * @brief 会計を表すクラス。
  */
-class treasurer : public general_affairs_officer {
+class CORE_EXPORT treasurer : public general_affairs_officer {
 public:
   /** @brief デストラクタ。 */
   virtual ~treasurer() = default;

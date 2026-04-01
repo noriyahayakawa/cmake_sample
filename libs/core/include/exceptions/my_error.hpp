@@ -5,6 +5,7 @@
  * @brief アプリケーション共通エラー例外と付加情報型を宣言する。
  */
 
+#include "core_export.hpp"
 #include <boost/exception/all.hpp>
 #include <string>
 
@@ -24,7 +25,7 @@ using errinfo_message = boost::error_info<struct tag_msg, std::string>;
  * Boost.Exception 情報を付与して送出するための型。
  * `what()` は保持している診断情報から表示用文字列を組み立てて返す。
  */
-struct my_error : virtual boost::exception, virtual std::exception {
+struct CORE_EXPORT my_error : virtual boost::exception, virtual std::exception {
   mutable std::string what_message_;
 
   /**

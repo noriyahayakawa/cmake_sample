@@ -5,7 +5,9 @@
  * @brief 共通設定構造体の JSON 変換処理を実装する。
  */
 
-namespace core::settings {}
+namespace core::settings {
+void commons::resolve_relative_path(const boost::filesystem::path &path) {}
+} // namespace core::settings
 
 namespace boost::json {
 

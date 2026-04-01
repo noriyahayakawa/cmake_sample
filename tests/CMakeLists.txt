@@ -28,6 +28,14 @@ target_compile_definitions(tests PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )
  
+# DLL ビルド時にテスト実行に必要な DLL を tests.exe と同じディレクトリへコピーする
+add_custom_command(TARGET tests POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          $<TARGET_RUNTIME_DLLS:tests>
+          $<TARGET_FILE_DIR:tests>
+  COMMAND_EXPAND_LISTS
+)
+
 include(GoogleTest)
 gtest_discover_tests(tests)
 

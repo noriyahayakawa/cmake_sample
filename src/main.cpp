@@ -102,10 +102,6 @@ const fs::path parse_args(int argc, char *argv[]) {
                        po::value<fs::path>()->default_value("app.jsonc"),
                        "入力ファイル")("help,h", "ヘルプを表示");
 
-    /**
-     * @brief ヘルプ表示用のオプション一覧文字列を生成する。
-     * @return `options_description` を整形した文字列。
-     */
     auto help_text = [&desc]() {
       std::ostringstream oss;
       oss << desc;
@@ -127,13 +123,6 @@ const fs::path parse_args(int argc, char *argv[]) {
     po::notify(vm);
     fs::path input_file = vm["input"].as<fs::path>();
 
-    /**
-     * @brief 現在の `input_file` が通常ファイルかを確認する。
-     * @retval true `input_file` が存在し、通常ファイルである。
-     * @retval false `input_file` が存在しない、または通常ファイルではない。
-     * @throws core::exceptions::my_error
-     * ファイル状態の取得に失敗した場合に送出される。
-     */
     boost::function<bool(const fs::path &)> is_regular_input_file =
         [](const fs::path &p) -> bool {
       if (fs::exists(p)) {
@@ -208,10 +197,12 @@ int main(int argc, char *argv[]) {
 
   try {
     ::init_logging(argv[0]);
-    core::student_council::instance().hello();
+    auto &student_council = core::student_council::instance();
+    student_council.hello();
     const auto input_file = ::parse_args(argc, argv);
-    core::settings::options::instance().read_input_file(input_file);
-    core::student_council::instance().run();
+    auto &options = core::settings::options::instance();
+    options.read_input_file(input_file);
+    student_council.run();
   } catch (const core::exceptions::show_help &e) {
     if (const std::string *msg =
             boost::get_error_info<core::exceptions::errinfo_message>(e)) {

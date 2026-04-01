@@ -48,3 +48,104 @@ TEST(options_test, read_jsonc_file_ignores_comments) {
   boost::system::error_code ec;
   boost::filesystem::remove(temp_path, ec);
 }
+
+/**
+ * @brief 通常の `.json` ファイルが正常に読み込めることを確認する。
+ */
+TEST(options_test, read_json_file_succeeds) {
+  const boost::filesystem::path temp_path =
+      boost::filesystem::temp_directory_path() /
+      boost::filesystem::unique_path("settings-%%%%-%%%%.json");
+
+  {
+    std::ofstream ofs(temp_path.string(), std::ios::binary);
+    ASSERT_TRUE(ofs.is_open());
+    ofs << R"({"commons":{"appName":"test","version":"0.1"}})";
+  }
+
+  EXPECT_NO_THROW(
+      core::settings::options::instance().read_input_file(temp_path));
+
+  boost::system::error_code ec;
+  boost::filesystem::remove(temp_path, ec);
+}
+
+/**
+ * @brief `read_input_file` 後に `input_file()`
+ * で読み込み内容が取得できることを確認する。
+ */
+TEST(options_test, input_file_reflects_loaded_content) {
+  const boost::filesystem::path temp_path =
+      boost::filesystem::temp_directory_path() /
+      boost::filesystem::unique_path("settings-%%%%-%%%%.json");
+
+  {
+    std::ofstream ofs(temp_path.string(), std::ios::binary);
+    ASSERT_TRUE(ofs.is_open());
+    ofs << R"({"commons":{"appName":"hello","version":"9.9"}})";
+  }
+
+  core::settings::options::instance().read_input_file(temp_path);
+  const auto &f = core::settings::options::instance().input_file();
+  EXPECT_EQ(f.commons.appName, "hello");
+  EXPECT_EQ(f.commons.version, "9.9");
+
+  boost::system::error_code ec;
+  boost::filesystem::remove(temp_path, ec);
+}
+
+/**
+ * @brief UTF-8 BOM 付きファイルでも正常に読み込めることを確認する。
+ */
+TEST(options_test, read_json_file_with_utf8_bom_succeeds) {
+  const boost::filesystem::path temp_path =
+      boost::filesystem::temp_directory_path() /
+      boost::filesystem::unique_path("settings-%%%%-%%%%.json");
+
+  {
+    std::ofstream ofs(temp_path.string(), std::ios::binary);
+    ASSERT_TRUE(ofs.is_open());
+    ofs.write("\xEF\xBB\xBF", 3);
+    ofs << R"({"commons":{"appName":"bom","version":"1"}})";
+  }
+
+  EXPECT_NO_THROW(
+      core::settings::options::instance().read_input_file(temp_path));
+
+  boost::system::error_code ec;
+  boost::filesystem::remove(temp_path, ec);
+}
+
+/**
+ * @brief `communications` セクション付きの JSON
+ * ファイルが正しく読み込めることを確認する。
+ */
+TEST(options_test, read_json_with_communications_section) {
+  const boost::filesystem::path temp_path =
+      boost::filesystem::temp_directory_path() /
+      boost::filesystem::unique_path("settings-%%%%-%%%%.json");
+
+  {
+    std::ofstream ofs(temp_path.string(), std::ios::binary);
+    ASSERT_TRUE(ofs.is_open());
+    ofs << R"({
+      "commons": {"appName":"app","version":"1.0"},
+      "communications": {
+        "server": {"enable":true,"name":"srv","service":"8080"},
+        "clients": [
+          {"enable":true,"name":"c1","address":"127.0.0.1","service":"9000"}
+        ]
+      }
+    })";
+  }
+
+  core::settings::options::instance().read_input_file(temp_path);
+  const auto &f = core::settings::options::instance().input_file();
+  EXPECT_TRUE(f.communications.server.enable);
+  EXPECT_EQ(f.communications.server.name, "srv");
+  ASSERT_EQ(f.communications.clients.size(), 1u);
+  EXPECT_EQ(f.communications.clients[0].address, "127.0.0.1");
+
+  boost::system::error_code ec;
+  boost::filesystem::remove(temp_path, ec);
+}

@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "core_export.hpp"
+
 namespace core {
 
 /**
@@ -13,7 +15,7 @@ namespace core {
  * 役員ごとの挨拶処理を `hello()` として統一し、派生クラスで必要に応じて
  * オーバーライドできる。
  */
-class general_affairs_officer {
+class CORE_EXPORT general_affairs_officer {
 public:
   /** @brief 仮想デストラクタ。 */
   virtual ~general_affairs_officer() = default;

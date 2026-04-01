@@ -12,7 +12,7 @@ namespace core {
 /**
  * @brief 副会長を表すクラス。
  */
-class vice_president : public general_affairs_officer {
+class CORE_EXPORT vice_president : public general_affairs_officer {
 public:
   /** @brief デストラクタ。 */
   virtual ~vice_president() = default;

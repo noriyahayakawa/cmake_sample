@@ -14,7 +14,7 @@ namespace core {
  * @details
  * 現在の実装では `hello()` で Boost バージョン情報をログ出力する。
  */
-class historian : public general_affairs_officer {
+class CORE_EXPORT historian : public general_affairs_officer {
 public:
   /** @brief デストラクタ。 */
   virtual ~historian() = default;

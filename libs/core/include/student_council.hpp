@@ -22,19 +22,20 @@ namespace asio = boost::asio;
  * @details
  * 役員インスタンスを内部に保持し、`hello()` で各役員処理を順に呼び出す。
  */
-class student_council : private boost::noncopyable {
+class CORE_EXPORT student_council : private boost::noncopyable {
 private:
   friend class boost::serialization::singleton<student_council>;
   friend class boost::serialization::detail::singleton_wrapper<student_council>;
 
-  asio::io_context io_context_;
+  asio::io_context io_context_; ///< Boost.Asio の I/O コンテキスト。
 
-  president president_;
-  vice_president vice_president_;
-  secretary secretary_;
-  historian historian_;
-  treasurer treasurer_;
+  president president_;           ///< 生徒会長インスタンス。
+  vice_president vice_president_; ///< 副会長インスタンス。
+  secretary secretary_;           ///< 書記インスタンス。
+  historian historian_;           ///< 記録係インスタンス。
+  treasurer treasurer_;           ///< 会計インスタンス。
 
+  /** @brief 外部からのインスタンス生成を禁止するデフォルトコンストラクタ。 */
   student_council() = default;
 
 public:

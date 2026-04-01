@@ -5,6 +5,7 @@
  * @brief ヘルプ表示要求例外を宣言する。
  */
 
+#include "core_export.hpp"
 #include <boost/exception/all.hpp>
 #include <string>
 
@@ -20,7 +21,8 @@ using errinfo_message = boost::error_info<struct tag_msg, std::string>;
  * 呼び出し側はこの例外を通常エラーとして扱わず、格納されたヘルプ文言を
  * 表示して正常終了できる。
  */
-struct show_help : virtual boost::exception, virtual std::exception {
+struct CORE_EXPORT show_help : virtual boost::exception,
+                               virtual std::exception {
   /**
    * @brief 例外メッセージを返す。
    * @details

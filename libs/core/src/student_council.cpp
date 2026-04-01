@@ -4,6 +4,7 @@
  */
 
 #include "student_council.hpp"
+#include "settings/options.hpp"
 
 namespace core {
 
@@ -23,6 +24,8 @@ void student_council::hello() const {
  * @details
  * 現在の実装は空で、将来の拡張ポイントとして保持している。
  */
-void student_council::run() {}
+void student_council::run() {
+  const auto &options = settings::options::instance();
+}
 
 } // namespace core

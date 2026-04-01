@@ -6,6 +6,7 @@
  */
 
 #include "settings/commons.hpp"
+#include "settings/communications.hpp"
 #include "settings/i_input_data.hpp"
 #include <boost/json.hpp>
 
@@ -18,14 +19,14 @@ namespace core::settings {
  * `boost::json` の `tag_invoke` カスタマイゼーションポイントで JSON との
  * 相互変換が可能。
  */
-struct input_file : public i_input_data {
+struct CORE_EXPORT input_file : public i_input_data {
   /** @brief アプリケーション共通設定。 */
   commons commons;
+  /** @brief 通信設定。 */
+  communications communications;
 
   virtual void
-  resolve_relative_path(const boost::filesystem::path &path) override {
-    commons.resolve_relative_path(path);
-  }
+  resolve_relative_path(const boost::filesystem::path &path) override;
 };
 
 } // namespace core::settings
@@ -39,8 +40,10 @@ namespace boost::json {
  * @details
  * ルートオブジェクトの `commons` キーを `core::settings::commons` として
  * 読み取る。`commons` キーが存在しない場合は既定構築した値を設定する。
+ * 同様に、`communications` キーを `core::settings::communications` として
+ * 読み取る。`communications` キーが存在しない場合は既定構築した値を設定する。
  */
-::core::settings::input_file
+CORE_EXPORT ::core::settings::input_file
 tag_invoke(value_to_tag<::core::settings::input_file>, const value &jv);
 
 /**
@@ -50,7 +53,7 @@ tag_invoke(value_to_tag<::core::settings::input_file>, const value &jv);
  * @details `commons` メンバを `commons` キーとして JSON
  * オブジェクトへ格納する。
  */
-void tag_invoke(value_from_tag, value &jv,
-                const ::core::settings::input_file &input_file);
+CORE_EXPORT void tag_invoke(value_from_tag, value &jv,
+                            const ::core::settings::input_file &input_file);
 
 } // namespace boost::json

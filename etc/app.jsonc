@@ -2,5 +2,20 @@
     "commons": {
         "appName": "My App",
         "version": "1.0.0"
+    },
+    "communications": {
+        "server": {
+            "enable": true,
+            "name": "Server A",
+            "service": "8080"
+        },
+        "clients": [
+            {
+                "enable": true,
+                "name": "Client A",
+                "address": "127.0.0.1",
+                "service": "8080"
+            }
+        ]
     }
 }

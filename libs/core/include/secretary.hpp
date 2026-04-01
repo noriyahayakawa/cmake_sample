@@ -12,7 +12,7 @@ namespace core {
 /**
  * @brief 書記を表すクラス。
  */
-class secretary : public general_affairs_officer {
+class CORE_EXPORT secretary : public general_affairs_officer {
 public:
   /** @brief デストラクタ。 */
   virtual ~secretary() = default;

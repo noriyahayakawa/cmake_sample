@@ -23,7 +23,7 @@ namespace fs = boost::filesystem;
  * 入力ファイルのパスと、そこから読み込んだ共通設定を保持する。
  * コピーと代入は禁止されている。
  */
-class options : private boost::noncopyable {
+class CORE_EXPORT options : private boost::noncopyable {
 private:
   friend class boost::serialization::singleton<options>;
   friend class boost::serialization::detail::singleton_wrapper<options>;

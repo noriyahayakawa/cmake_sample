@@ -5,7 +5,12 @@
  * @brief 入力ファイル構造体の JSON 変換処理を実装する。
  */
 
-namespace core::settings {}
+namespace core::settings {
+void input_file::resolve_relative_path(const boost::filesystem::path &path) {
+  commons.resolve_relative_path(path);
+  communications.resolve_relative_path(path);
+}
+} // namespace core::settings
 
 namespace boost::json {
 
@@ -26,6 +31,10 @@ tag_invoke(value_to_tag<::core::settings::input_file>, const value &jv) {
       obj.if_contains("commons")
           ? value_to<::core::settings::commons>(obj.at("commons"))
           : ::core::settings::commons{};
+  input_file.communications =
+      obj.if_contains("communications")
+          ? value_to<::core::settings::communications>(obj.at("communications"))
+          : ::core::settings::communications{};
   return input_file;
 }
 
@@ -36,11 +45,13 @@ tag_invoke(value_to_tag<::core::settings::input_file>, const value &jv) {
  * @details
  * - 出力先は JSON オブジェクトで上書きする。
  * - `commons` メンバは対応する `tag_invoke` を使って JSON 値へ変換する。
+ * - `communications` メンバは対応する `tag_invoke` を使って JSON 値へ変換する。
  */
 void tag_invoke(value_from_tag, value &jv,
                 const ::core::settings::input_file &input_file) {
   object obj;
   obj["commons"] = value_from(input_file.commons);
+  obj["communications"] = value_from(input_file.communications);
   jv = std::move(obj);
 }
 
