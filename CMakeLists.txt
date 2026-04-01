@@ -9,7 +9,7 @@ if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
 endif()
 
-project(sample LANGUAGES CXX)
+project(cmake_sample LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(ENABLE_AUTO_CLANG_FORMAT "Run clang-format before building targets" OFF)
@@ -75,11 +75,20 @@ add_subdirectory(tests)
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
-  add_custom_target(doc
+  set(DOXYGEN_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/out/docs")
+  add_custom_command(
+    OUTPUT "${DOXYGEN_OUTPUT_DIR}/html/index.html"
     COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Generate API documentation with Doxygen"
     VERBATIM
+  )
+  add_custom_target(doc ALL
+    DEPENDS "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+  )
+  install(DIRECTORY "${DOXYGEN_OUTPUT_DIR}/html/"
+    # DESTINATION ${CMAKE_INSTALL_DOCDIR}
+    DESTINATION docs
   )
 else()
   message(STATUS "Doxygen was not found. 'doc' target is unavailable.")

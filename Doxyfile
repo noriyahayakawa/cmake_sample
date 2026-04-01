@@ -1,6 +1,6 @@
-# Doxygen configuration for cmake_windows_sample
+# Doxygen configuration for cmake_sample
 
-PROJECT_NAME           = "cmake_windows_sample"
+PROJECT_NAME           = "cmake_sample"
 PROJECT_BRIEF          = "CMake C++ sample project"
 OUTPUT_DIRECTORY       = out/docs
 CREATE_SUBDIRS         = NO
