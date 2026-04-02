@@ -26,7 +26,7 @@
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x64-windows",
         "CMAKE_C_FLAGS": "/utf-8",
-        "CMAKE_CXX_FLAGS": "/utf-8"
+        "CMAKE_CXX_FLAGS": "/utf-8 /std:c++23"
       }
     },
     {

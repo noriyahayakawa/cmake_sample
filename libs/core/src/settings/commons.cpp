@@ -24,14 +24,14 @@ namespace boost::json {
 tag_invoke(boost::json::value_to_tag<::core::settings::commons>,
            const value &jv) {
   const object &obj = jv.as_object();
-  ::core::settings::commons commons;
-  commons.appName = obj.if_contains("appName")
+  ::core::settings::commons result;
+  result.app_name = obj.if_contains("appName")
                         ? value_to<std::string>(obj.at("appName"))
                         : "";
-  commons.version = obj.if_contains("version")
-                        ? value_to<std::string>(obj.at("version"))
-                        : "";
-  return commons;
+  result.version = obj.if_contains("version")
+                       ? value_to<std::string>(obj.at("version"))
+                       : "";
+  return result;
 }
 
 /**
@@ -45,8 +45,8 @@ tag_invoke(boost::json::value_to_tag<::core::settings::commons>,
 void tag_invoke(value_from_tag, value &jv,
                 const ::core::settings::commons &commons) {
   object obj;
-  if (!commons.appName.empty()) {
-    obj["appName"] = value_from(commons.appName);
+  if (!commons.app_name.empty()) {
+    obj["appName"] = value_from(commons.app_name);
   }
   if (!commons.version.empty()) {
     obj["version"] = value_from(commons.version);

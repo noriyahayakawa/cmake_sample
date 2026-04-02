@@ -21,7 +21,7 @@ namespace core::settings {
  */
 struct CORE_EXPORT commons : public i_input_data {
   /** @brief アプリケーション名 */
-  std::string appName;
+  std::string app_name;
   /** @brief アプリケーションのバージョン文字列 */
   std::string version;
 

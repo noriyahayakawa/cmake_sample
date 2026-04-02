@@ -21,7 +21,7 @@
 TEST(commons_test, json_to_commons_reads_fields) {
   const auto jv = boost::json::parse(R"({"appName":"MyApp","version":"2.0"})");
   const auto c = boost::json::value_to<core::settings::commons>(jv);
-  EXPECT_EQ(c.appName, "MyApp");
+  EXPECT_EQ(c.app_name, "MyApp");
   EXPECT_EQ(c.version, "2.0");
 }
 
@@ -32,7 +32,7 @@ TEST(commons_test, json_to_commons_reads_fields) {
 TEST(commons_test, json_to_commons_missing_keys_default_to_empty) {
   const auto jv = boost::json::parse("{}");
   const auto c = boost::json::value_to<core::settings::commons>(jv);
-  EXPECT_EQ(c.appName, "");
+  EXPECT_EQ(c.app_name, "");
   EXPECT_EQ(c.version, "");
 }
 
@@ -42,11 +42,11 @@ TEST(commons_test, json_to_commons_missing_keys_default_to_empty) {
  */
 TEST(commons_test, commons_to_json_roundtrip) {
   core::settings::commons src;
-  src.appName = "TestApp";
+  src.app_name = "TestApp";
   src.version = "3.1";
   const auto jv = boost::json::value_from(src);
   const auto dst = boost::json::value_to<core::settings::commons>(jv);
-  EXPECT_EQ(dst.appName, src.appName);
+  EXPECT_EQ(dst.app_name, src.app_name);
   EXPECT_EQ(dst.version, src.version);
 }
 
@@ -116,11 +116,11 @@ TEST(server_settings_test, server_settings_to_json_roundtrip) {
  */
 TEST(client_settings_test, json_to_client_settings_reads_fields) {
   const auto jv = boost::json::parse(
-      R"({"enable":true,"name":"c1","address":"127.0.0.1","service":"1234"})");
+      R"({"enable":true,"name":"c1","host":"127.0.0.1","service":"1234"})");
   const auto c = boost::json::value_to<core::settings::client_settings>(jv);
   EXPECT_TRUE(c.enable);
   EXPECT_EQ(c.name, "c1");
-  EXPECT_EQ(c.address, "127.0.0.1");
+  EXPECT_EQ(c.host, "127.0.0.1");
   EXPECT_EQ(c.service, "1234");
 }
 
@@ -133,8 +133,8 @@ TEST(client_settings_test, json_to_client_settings_missing_keys_default) {
   const auto c = boost::json::value_to<core::settings::client_settings>(jv);
   EXPECT_FALSE(c.enable);
   EXPECT_EQ(c.name, "");
-  EXPECT_EQ(c.address, "");
-  EXPECT_EQ(c.service, "");
+  EXPECT_EQ(c.host, std::nullopt);
+  EXPECT_EQ(c.service, std::nullopt);
 }
 
 /**
@@ -145,13 +145,13 @@ TEST(client_settings_test, client_settings_to_json_roundtrip) {
   core::settings::client_settings src;
   src.enable = true;
   src.name = "cli";
-  src.address = "192.168.0.1";
+  src.host = "192.168.0.1";
   src.service = "5000";
   const auto jv = boost::json::value_from(src);
   const auto dst = boost::json::value_to<core::settings::client_settings>(jv);
   EXPECT_EQ(dst.enable, src.enable);
   EXPECT_EQ(dst.name, src.name);
-  EXPECT_EQ(dst.address, src.address);
+  EXPECT_EQ(dst.host, src.host);
   EXPECT_EQ(dst.service, src.service);
 }
 
@@ -167,7 +167,7 @@ TEST(communications_test, json_to_communications_reads_server_and_clients) {
   const auto jv = boost::json::parse(R"({
     "server": {"enable":true,"name":"sv","service":"8080"},
     "clients": [
-      {"enable":true,"name":"c1","address":"localhost","service":"9000"}
+      {"enable":true,"name":"c1","host":"localhost","service":"9000"}
     ]
   })");
   const auto comm = boost::json::value_to<core::settings::communications>(jv);
@@ -176,7 +176,7 @@ TEST(communications_test, json_to_communications_reads_server_and_clients) {
   ASSERT_EQ(comm.clients.size(), 1u);
   EXPECT_TRUE(comm.clients[0].enable);
   EXPECT_EQ(comm.clients[0].name, "c1");
-  EXPECT_EQ(comm.clients[0].address, "localhost");
+  EXPECT_EQ(comm.clients[0].host, "localhost");
 }
 
 /**
@@ -202,14 +202,14 @@ TEST(communications_test, communications_to_json_roundtrip) {
   core::settings::client_settings cl;
   cl.enable = false;
   cl.name = "cli";
-  cl.address = "10.0.0.1";
+  cl.host = "10.0.0.1";
   cl.service = "3000";
   src.clients.push_back(cl);
   const auto jv = boost::json::value_from(src);
   const auto dst = boost::json::value_to<core::settings::communications>(jv);
   EXPECT_EQ(dst.server.name, src.server.name);
   ASSERT_EQ(dst.clients.size(), 1u);
-  EXPECT_EQ(dst.clients[0].address, src.clients[0].address);
+  EXPECT_EQ(dst.clients[0].host, src.clients[0].host);
 }
 
 // ─────────────────────────────────────────────
@@ -224,7 +224,7 @@ TEST(input_file_test, json_to_input_file_reads_commons) {
   const auto jv =
       boost::json::parse(R"({"commons":{"appName":"App","version":"1.0"}})");
   const auto f = boost::json::value_to<core::settings::input_file>(jv);
-  EXPECT_EQ(f.commons.appName, "App");
+  EXPECT_EQ(f.commons.app_name, "App");
   EXPECT_EQ(f.commons.version, "1.0");
 }
 
@@ -238,15 +238,15 @@ TEST(input_file_test, json_to_input_file_reads_communications) {
     "communications": {
       "server": {"enable":true,"name":"s","service":"80"},
       "clients": [
-        {"enable":true,"name":"c","address":"127.0.0.1","service":"9000"}
+        {"enable":true,"name":"c","host":"127.0.0.1","service":"9000"}
       ]
     }
   })");
   const auto f = boost::json::value_to<core::settings::input_file>(jv);
-  EXPECT_EQ(f.commons.appName, "A");
+  EXPECT_EQ(f.commons.app_name, "A");
   EXPECT_TRUE(f.communications.server.enable);
   ASSERT_EQ(f.communications.clients.size(), 1u);
-  EXPECT_EQ(f.communications.clients[0].address, "127.0.0.1");
+  EXPECT_EQ(f.communications.clients[0].host, "127.0.0.1");
 }
 
 /**
@@ -256,7 +256,7 @@ TEST(input_file_test, json_to_input_file_reads_communications) {
 TEST(input_file_test, json_to_input_file_missing_keys_default) {
   const auto jv = boost::json::parse("{}");
   const auto f = boost::json::value_to<core::settings::input_file>(jv);
-  EXPECT_EQ(f.commons.appName, "");
+  EXPECT_EQ(f.commons.app_name, "");
   EXPECT_EQ(f.commons.version, "");
   EXPECT_FALSE(f.communications.server.enable);
   EXPECT_TRUE(f.communications.clients.empty());

@@ -27,8 +27,7 @@ private:
   friend class boost::serialization::singleton<student_council>;
   friend class boost::serialization::detail::singleton_wrapper<student_council>;
 
-  asio::io_context io_context_; ///< Boost.Asio の I/O コンテキスト。
-
+  asio::io_context io_context_;   ///< 非同期処理の実行コンテキスト。
   president president_;           ///< 生徒会長インスタンス。
   vice_president vice_president_; ///< 副会長インスタンス。
   secretary secretary_;           ///< 書記インスタンス。
@@ -61,7 +60,7 @@ public:
    * @details
    * 現状の実装は空で、将来の拡張ポイントとして定義されている。
    */
-  void run();
+  asio::awaitable<void> run();
 };
 
 } // namespace core

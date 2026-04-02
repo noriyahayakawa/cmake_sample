@@ -8,6 +8,7 @@
 #include "core_export.hpp"
 #include "settings/i_input_data.hpp"
 #include <boost/json.hpp>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,7 @@ struct CORE_EXPORT server_settings : public i_input_data {
   /** @brief サーバの識別名。 */
   std::string name;
   /** @brief サーバのサービス名またはポート番号文字列。 */
-  std::string service;
+  std::optional<std::string> service;
 
   virtual void
   resolve_relative_path(const boost::filesystem::path &path) override;
@@ -45,9 +46,9 @@ struct CORE_EXPORT client_settings : public i_input_data {
   /** @brief クライアントの識別名。 */
   std::string name;
   /** @brief 接続先アドレス。 */
-  std::string address;
+  std::optional<std::string> host;
   /** @brief 接続先サービス名またはポート番号文字列。 */
-  std::string service;
+  std::optional<std::string> service;
 
   virtual void
   resolve_relative_path(const boost::filesystem::path &path) override;
@@ -109,7 +110,7 @@ tag_invoke(value_to_tag<::core::settings::client_settings>, const value &jv);
  * @brief `core::settings::client_settings` を JSON 値に変換する。
  * @param jv 変換先の JSON 値。JSON オブジェクトとして上書きされる。
  * @param client_settings 変換元のクライアント設定。
- * @details `enable`、`name`、`address`、`service` をすべて JSON
+ * @details `enable`、`name`、`host`、`service` をすべて JSON
  * オブジェクトへ格納する。
  */
 CORE_EXPORT void

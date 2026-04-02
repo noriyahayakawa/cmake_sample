@@ -87,7 +87,7 @@ TEST(options_test, input_file_reflects_loaded_content) {
 
   core::settings::options::instance().read_input_file(temp_path);
   const auto &f = core::settings::options::instance().input_file();
-  EXPECT_EQ(f.commons.appName, "hello");
+  EXPECT_EQ(f.commons.app_name, "hello");
   EXPECT_EQ(f.commons.version, "9.9");
 
   boost::system::error_code ec;
@@ -144,7 +144,7 @@ TEST(options_test, read_json_with_communications_section) {
   EXPECT_TRUE(f.communications.server.enable);
   EXPECT_EQ(f.communications.server.name, "srv");
   ASSERT_EQ(f.communications.clients.size(), 1u);
-  EXPECT_EQ(f.communications.clients[0].address, "127.0.0.1");
+  EXPECT_EQ(f.communications.clients[0].host, "127.0.0.1");
 
   boost::system::error_code ec;
   boost::filesystem::remove(temp_path, ec);

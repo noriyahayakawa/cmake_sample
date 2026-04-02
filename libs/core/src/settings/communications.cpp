@@ -37,15 +37,16 @@ namespace boost::json {
 ::core::settings::server_settings
 tag_invoke(value_to_tag<::core::settings::server_settings>, const value &jv) {
   const object &obj = jv.as_object();
-  ::core::settings::server_settings server_settings;
-  server_settings.enable =
+  ::core::settings::server_settings result;
+  result.enable =
       obj.if_contains("enable") ? value_to<bool>(obj.at("enable")) : false;
-  server_settings.name =
+  result.name =
       obj.if_contains("name") ? value_to<std::string>(obj.at("name")) : "";
-  server_settings.service = obj.if_contains("service")
-                                ? value_to<std::string>(obj.at("service"))
-                                : "";
-  return server_settings;
+  result.service =
+      obj.if_contains("service")
+          ? std::optional<std::string>(value_to<std::string>(obj.at("service")))
+          : std::nullopt;
+  return result;
 }
 
 /**
@@ -71,24 +72,26 @@ void tag_invoke(value_from_tag, value &jv,
  * @return 変換後の `client_settings` 構造体。
  * @details
  * - `jv` を JSON オブジェクトとして解釈する。
- * - `enable`、`name`、`address`、`service` をキー存在確認付きで読み取る。
+ * - `enable`、`name`、`host`、`service` をキー存在確認付きで読み取る。
  * - キーが存在しない場合は既定値（`false` または空文字）を設定する。
  */
 ::core::settings::client_settings
 tag_invoke(value_to_tag<::core::settings::client_settings>, const value &jv) {
   const object &obj = jv.as_object();
-  ::core::settings::client_settings client_settings;
-  client_settings.enable =
+  ::core::settings::client_settings result;
+  result.enable =
       obj.if_contains("enable") ? value_to<bool>(obj.at("enable")) : false;
-  client_settings.name =
+  result.name =
       obj.if_contains("name") ? value_to<std::string>(obj.at("name")) : "";
-  client_settings.address = obj.if_contains("address")
-                                ? value_to<std::string>(obj.at("address"))
-                                : "";
-  client_settings.service = obj.if_contains("service")
-                                ? value_to<std::string>(obj.at("service"))
-                                : "";
-  return client_settings;
+  result.host =
+      obj.if_contains("host")
+          ? std::optional<std::string>(value_to<std::string>(obj.at("host")))
+          : std::nullopt;
+  result.service =
+      obj.if_contains("service")
+          ? std::optional<std::string>(value_to<std::string>(obj.at("service")))
+          : std::nullopt;
+  return result;
 }
 
 /**
@@ -97,15 +100,14 @@ tag_invoke(value_to_tag<::core::settings::client_settings>, const value &jv) {
  * @param client_settings 変換元のクライアント設定。
  * @details
  * - 出力先は JSON オブジェクトで上書きする。
- * - `enable`、`name`、`address`、`service` をすべて JSON
- * オブジェクトへ出力する。
+ * - `enable`、`name`、`host`、`service` をすべて JSON オブジェクトへ出力する。
  */
 void tag_invoke(value_from_tag, value &jv,
                 const ::core::settings::client_settings &client_settings) {
   object obj;
   obj["enable"] = value_from(client_settings.enable);
   obj["name"] = value_from(client_settings.name);
-  obj["address"] = value_from(client_settings.address);
+  obj["host"] = value_from(client_settings.host);
   obj["service"] = value_from(client_settings.service);
   jv = std::move(obj);
 }
@@ -123,18 +125,18 @@ void tag_invoke(value_from_tag, value &jv,
 ::core::settings::communications
 tag_invoke(value_to_tag<::core::settings::communications>, const value &jv) {
   const object &obj = jv.as_object();
-  ::core::settings::communications communications;
-  communications.server =
+  ::core::settings::communications result;
+  result.server =
       obj.if_contains("server")
           ? value_to<::core::settings::server_settings>(obj.at("server"))
           : ::core::settings::server_settings{};
 
-  communications.clients =
+  result.clients =
       obj.if_contains("clients")
           ? value_to<std::vector<::core::settings::client_settings>>(
                 obj.at("clients"))
           : std::vector<::core::settings::client_settings>{};
-  return communications;
+  return result;
 }
 
 /**
