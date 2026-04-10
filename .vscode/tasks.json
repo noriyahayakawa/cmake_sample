@@ -279,6 +279,7 @@
     },
     {
       "label": "[Linux] CMake: ビルド (clang Debug)",
+
       "type": "shell",
       "command": "cmake",
       "args": [

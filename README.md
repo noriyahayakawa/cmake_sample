@@ -225,7 +225,7 @@ cmake --preset clangcl-debug-static -DENABLE_AUTO_CLANG_FORMAT=OFF
 - クリーン: clang-cl / MSVC (Debug, Release)
 - リビルド: clang-cl / MSVC (Debug, Release)
 - テスト: CTest (clang-cl Debug)
-- 補助: clang-tidy, フォーマット
+- 補助: 静的解析, フォーマット
 
 例:
 - CMake: リビルド (clang-cl Debug)
