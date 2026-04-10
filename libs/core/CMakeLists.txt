@@ -10,11 +10,11 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
  
 add_library(core src/core.cpp)
-target_compile_options(core
-  PRIVATE
-    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/utf-8>
-    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-finput-charset=UTF-8>
-)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
+  target_compile_options(core PRIVATE /utf-8)
+else()
+  target_compile_options(core PRIVATE -finput-charset=UTF-8)
+endif()
 target_include_directories(core
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include

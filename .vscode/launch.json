@@ -1,53 +1,112 @@
 {
   "version": "0.2.0",
   "configurations": [
+    // -----------------------------------------------------------------------
+    // [Windows] clang-cl
+    // -----------------------------------------------------------------------
     {
-      "name": "Debug app (clangcl-debug)",
+      "name": "[Windows] Debug app (clang-cl Debug)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/out/build/clangcl-debug/app.exe",
+      "program": "${workspaceFolder}/out/build/clangcl-debug-static/app.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (clang-cl Debug)"
+      "preLaunchTask": "[Windows] CMake: ビルド (clang-cl Debug)"
     },
     {
-      "name": "Debug tests (clangcl-debug)",
+      "name": "[Windows] Debug tests (clang-cl Debug)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/out/build/clangcl-debug/tests.exe",
+      "program": "${workspaceFolder}/out/build/clangcl-debug-static/tests/tests.exe",
       "args": ["--gtest_filter=*"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (clang-cl Debug)"
+      "preLaunchTask": "[Windows] CMake: ビルド (clang-cl Debug)"
     },
+    // -----------------------------------------------------------------------
+    // [Windows] MSVC
+    // -----------------------------------------------------------------------
     {
-      "name": "Debug app (msvc-debug)",
+      "name": "[Windows] Debug app (MSVC Debug)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/out/build/msvc-debug/app.exe",
+      "program": "${workspaceFolder}/out/build/msvc-debug-static/app.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (MSVC Debug)"
+      "preLaunchTask": "[Windows] CMake: ビルド (MSVC Debug)"
     },
     {
-      "name": "Debug tests (msvc-debug)",
+      "name": "[Windows] Debug tests (MSVC Debug)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/out/build/msvc-debug/tests.exe",
+      "program": "${workspaceFolder}/out/build/msvc-debug-static/tests/tests.exe",
       "args": ["--gtest_filter=*"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "CMake: ビルド (MSVC Debug)"
+      "preLaunchTask": "[Windows] CMake: ビルド (MSVC Debug)"
+    },
+    // -----------------------------------------------------------------------
+    // [WSL Ubuntu-24.04] clang
+    // -----------------------------------------------------------------------
+    {
+      "name": "[WSL Ubuntu-24.04] Debug app (clang Debug)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/home/hayak/work/cmake_sample/out/build/clang-debug/app",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "/home/hayak/work/cmake_sample",
+      "environment": [],
+      "externalConsole": false,
+      "pipeTransport": {
+        "pipeCwd": "${workspaceFolder}",
+        "pipeProgram": "wsl",
+        "pipeArgs": ["-d", "Ubuntu-24.04", "--"],
+        "debuggerPath": "/usr/bin/gdb"
+      },
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "[WSL Ubuntu-24.04] CMake: ビルド (clang Debug)"
+    },
+    {
+      "name": "[WSL Ubuntu-24.04] Debug tests (clang Debug)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/home/hayak/work/cmake_sample/out/build/clang-debug/tests/tests",
+      "args": ["--gtest_filter=*"],
+      "stopAtEntry": false,
+      "cwd": "/home/hayak/work/cmake_sample",
+      "environment": [],
+      "externalConsole": false,
+      "pipeTransport": {
+        "pipeCwd": "${workspaceFolder}",
+        "pipeProgram": "wsl",
+        "pipeArgs": ["-d", "Ubuntu-24.04", "--"],
+        "debuggerPath": "/usr/bin/gdb"
+      },
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "[WSL Ubuntu-24.04] CMake: ビルド (clang Debug)"
     }
   ]
 }

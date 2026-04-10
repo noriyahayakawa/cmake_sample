@@ -43,25 +43,44 @@
 - msvc-* プリセットは cl.exe を使用します。
 - VS Code タスクでは tools/cmake-msvc-x64.cmd 経由で MSVC 環境を設定します。
 
-### Linux
+### Linux / WSL2 (Ubuntu 22.04+)
 | ツール | バージョン | 備考 |
 |--------|-----------|------|
-| Ubuntu 22.04+ など | | |
+| Ubuntu 22.04+ | | WSL2 (Ubuntu-24.04) でも動作 |
 | LLVM / Clang | 最新推奨 | clang, clang++, clang-tidy, clang-format |
 | CMake | 3.23+ | |
 | Ninja | 最新推奨 | |
 | curl, zip, unzip, tar | | vcpkg 依存 |
+| autoconf, autoconf-archive, automake, libtool | | vcpkg が libbacktrace をビルドする際に必要 |
+| python3 | 3.x | vcpkg 内部処理で使用 |
 
 ```bash
 sudo apt install -y clang clang-tidy clang-format cmake ninja-build \
-                    curl zip unzip tar pkg-config
+                    curl zip unzip tar pkg-config \
+                    autoconf autoconf-archive automake libtool python3
+```
+
+#### WSL2 固有の注意
+WSL2 カーネルが `CONFIG_HZ=100` でビルドされている場合（Microsoft 公式カーネルを含む）、  
+ファイルシステムの mtime 解像度が 10ms 程度になり、vcpkg ライブラリのビルド中に  
+`ninja: manifest 'build.ninja' still dirty after 100 tries` エラーが発生することがあります。  
+本プロジェクトの `vcpkg/triplets/x64-linux.cmake` に以下の workaround が適用済みです。
+
+```cmake
+# WSL2 CONFIG_HZ=100 workaround
+set(VCPKG_CMAKE_CONFIGURE_OPTIONS "-DCMAKE_SUPPRESS_REGENERATION=ON")
 ```
 
 ## セットアップ
 ```powershell
 # 既に submodule 登録済みの場合
 git submodule update --init --recursive
+
+# Windows
 ./vcpkg/bootstrap-vcpkg.bat
+
+# Linux / WSL2
+./vcpkg/bootstrap-vcpkg.sh
 ```
 
 ## 推奨実行順
