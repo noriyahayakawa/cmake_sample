@@ -17,11 +17,11 @@ target_link_libraries(tests
     GTest::gtest_main
     core
 )
-target_compile_options(tests
-  PRIVATE
-    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/utf-8>
-    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-finput-charset=UTF-8>
-)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
+  target_compile_options(tests PRIVATE /utf-8)
+else()
+  target_compile_options(tests PRIVATE -finput-charset=UTF-8)
+endif()
 target_compile_definitions(tests PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )
