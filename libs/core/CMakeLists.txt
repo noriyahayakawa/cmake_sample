@@ -17,14 +17,26 @@ else()
 endif()
 target_include_directories(core
   PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CORE_PUBLIC_INCLUDE_DIRS}
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  PRIVATE
+    ${CORE_PRIVATE_INCLUDE_DIRS}
 )
 target_compile_definitions(core PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )
 
-find_package(Boost CONFIG REQUIRED)
-target_link_libraries(core PUBLIC Boost::boost)
+find_package(Boost CONFIG REQUIRED COMPONENTS headers program_options filesystem json asio log log_setup)
+target_link_libraries(core
+  PUBLIC
+    Boost::headers
+    Boost::filesystem
+    Boost::json
+    Boost::program_options
+    Boost::log
+    Boost::log_setup
+    Boost::asio
+)
 
 # --- DLL export/import マクロの自動生成 ---
 include(GenerateExportHeader)  # CMake組み込みモジュール[1](https://cmake.org/cmake/help/latest/module/GenerateExportHeader.html)
@@ -37,7 +49,22 @@ generate_export_header(core
 # 生成された core_export.h を利用側も include できるようにする
 target_include_directories(core
   PUBLIC
-    ${CMAKE_CURRENT_BINARY_DIR}
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
+
+install(TARGETS core
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/core_export.hpp
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 find_program(CLANG_FORMAT_EXE NAMES clang-format)

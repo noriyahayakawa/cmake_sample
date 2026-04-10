@@ -17,17 +17,6 @@
       "type": "shell",
       "command": "cmake",
       "args": [
-        "--preset",
-        "clangcl-release-static"
-      ],
-      "problemMatcher": [],
-      "group": "build"
-    },
-    {
-      "label": "[Windows] CMake: ビルド (clang-cl Debug)",
-      "type": "shell",
-      "command": "cmake",
-      "args": [
         "--build",
         "--preset",
         "clangcl-debug-static"
@@ -41,13 +30,74 @@
       }
     },
     {
+      "label": "[Windows] CMake: ビルド (clang-cl Debug)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clangcl-debug-static",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (clangcl-debug-static)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "CMake: クリーン (clangcl-debug-static)",
+        "CMake: ビルド (clangcl-debug-static)"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clangcl-debug-static)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--install",
+        "${workspaceFolder}/out/build/clangcl-debug-static",
+        "--prefix",
+        "${workspaceFolder}/out/install/clangcl-debug-static"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CTest: テスト (clangcl-debug-static)",
+      "type": "shell",
+      "command": "ctest",
+      "args": [
+        "--preset",
+        "clangcl-debug-static"
+      ],
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "CMake: 構成 (clangcl-debug-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--preset",
+        "clangcl-debug-dll"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
       "label": "[Windows] CMake: ビルド (clang-cl Release)",
       "type": "shell",
       "command": "cmake",
       "args": [
         "--build",
         "--preset",
-        "clangcl-release-static"
+        "clangcl-debug-dll"
       ],
       "problemMatcher": [
         "$msCompile"
@@ -61,9 +111,21 @@
       "args": [
         "--build",
         "--preset",
-        "clangcl-debug-static",
+        "clangcl-debug-dll",
         "--target",
         "clean"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (clangcl-debug-dll)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "CMake: クリーン (clangcl-debug-dll)",
+        "CMake: ビルド (clangcl-debug-dll)"
       ],
       "problemMatcher": [],
       "group": "build"
@@ -73,11 +135,32 @@
       "type": "shell",
       "command": "cmake",
       "args": [
-        "--build",
+        "--install",
+        "${workspaceFolder}/out/build/clangcl-debug-dll",
+        "--prefix",
+        "${workspaceFolder}/out/install/clangcl-debug-dll"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CTest: テスト (clangcl-debug-dll)",
+      "type": "shell",
+      "command": "ctest",
+      "args": [
         "--preset",
-        "clangcl-release-static",
-        "--target",
-        "clean"
+        "clangcl-debug-dll"
+      ],
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "CMake: 構成 (clangcl-release-static)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--preset",
+        "clangcl-release-static"
       ],
       "problemMatcher": [],
       "group": "build"
@@ -89,8 +172,7 @@
       "args": [
         "--build",
         "--preset",
-        "clangcl-debug-static",
-        "--clean-first"
+        "clangcl-release-static"
       ],
       "problemMatcher": [
         "$msCompile"
@@ -105,7 +187,8 @@
         "--build",
         "--preset",
         "clangcl-release-static",
-        "--clean-first"
+        "--target",
+        "clean"
       ],
       "problemMatcher": [
         "$msCompile"
@@ -152,31 +235,49 @@
     {
       "label": "[Windows] CMake: 構成 (MSVC Debug)",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
+      "command": "ctest",
       "args": [
         "--preset",
-        "msvc-debug-static"
+        "clangcl-release-static"
       ],
-      "problemMatcher": []
+      "problemMatcher": [],
+      "group": "test"
     },
     {
       "label": "[Windows] CMake: 構成 (MSVC Release)",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
+      "command": "cmake",
       "args": [
         "--preset",
-        "msvc-release-static"
+        "clangcl-release-dll"
       ],
-      "problemMatcher": []
+      "problemMatcher": [],
+      "group": "build"
     },
     {
       "label": "[Windows] CMake: ビルド (MSVC Debug)",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
+      "command": "cmake",
       "args": [
         "--build",
         "--preset",
-        "msvc-debug-static"
+        "clangcl-release-dll"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: クリーン (clangcl-release-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clangcl-release-dll",
+        "--target",
+        "clean"
       ],
       "problemMatcher": [
         "$msCompile"
@@ -190,7 +291,7 @@
       "args": [
         "--build",
         "--preset",
-        "msvc-release-static"
+        "msvc-debug-static"
       ],
       "problemMatcher": [
         "$msCompile"
@@ -208,6 +309,31 @@
         "--target",
         "clean"
       ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (msvc-debug-static)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "CMake: クリーン (msvc-debug-static)",
+        "CMake: ビルド (msvc-debug-static)"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (msvc-debug-static)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--install",
+        "${workspaceFolder}/out/build/msvc-debug-static",
+        "--prefix",
+        "${workspaceFolder}/out/install/msvc-debug-static"
+      ],
       "problemMatcher": [],
       "group": "build"
     },
@@ -216,11 +342,8 @@
       "type": "shell",
       "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
       "args": [
-        "--build",
         "--preset",
-        "msvc-release-static",
-        "--target",
-        "clean"
+        "msvc-debug-dll"
       ],
       "problemMatcher": [],
       "group": "build"
@@ -232,8 +355,7 @@
       "args": [
         "--build",
         "--preset",
-        "msvc-debug-static",
-        "--clean-first"
+        "msvc-debug-dll"
       ],
       "problemMatcher": [
         "$msCompile"
@@ -247,8 +369,9 @@
       "args": [
         "--build",
         "--preset",
-        "msvc-release-static",
-        "--clean-first"
+        "msvc-debug-dll",
+        "--target",
+        "clean"
       ],
       "problemMatcher": [
         "$msCompile"
@@ -282,6 +405,41 @@
 
       "type": "shell",
       "command": "cmake",
+      "args": [
+        "--install",
+        "${workspaceFolder}/out/build/msvc-debug-dll",
+        "--prefix",
+        "${workspaceFolder}/out/install/msvc-debug-dll"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CTest: テスト (msvc-debug-dll)",
+      "type": "shell",
+      "command": "ctest",
+      "args": [
+        "--preset",
+        "msvc-debug-dll"
+      ],
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "CMake: 構成 (msvc-release-static)",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
+      "args": [
+        "--preset",
+        "msvc-release-static"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: ビルド (msvc-release-static)",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
       "args": [
         "--build",
         "--preset",
@@ -376,24 +534,24 @@
       "problemMatcher": [
         "$gcc"
       ],
-      "group": "test"
+      "group": "build"
     },
     {
       "label": "[Linux] CMake: フォーマット",
       "type": "shell",
-      "command": "cmake",
+      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
       "args": [
         "--build",
         "--preset",
         "format-linux"
       ],
       "problemMatcher": [],
-      "group": "none"
+      "group": "build"
     },
     {
       "label": "[Linux] CTest: テスト (clang Debug)",
       "type": "shell",
-      "command": "ctest",
+      "command": "cmake",
       "args": [
         "--preset",
         "clang-debug"
@@ -614,7 +772,487 @@
         "clang-release"
       ],
       "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CTest: テスト (msvc-release-static)",
+      "type": "shell",
+      "command": "ctest",
+      "args": [
+        "--preset",
+        "msvc-release-static"
+      ],
+      "problemMatcher": [],
       "group": "test"
+    },
+    {
+      "label": "CMake: 構成 (msvc-release-dll)",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
+      "args": [
+        "--preset",
+        "msvc-release-dll"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: ビルド (msvc-release-dll)",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
+      "args": [
+        "--build",
+        "--preset",
+        "msvc-release-dll"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: クリーン (msvc-release-dll)",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/cmake-msvc-x64.cmd",
+      "args": [
+        "--build",
+        "--preset",
+        "msvc-release-dll",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (msvc-release-dll)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "CMake: クリーン (msvc-release-dll)",
+        "CMake: ビルド (msvc-release-dll)"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (msvc-release-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--install",
+        "${workspaceFolder}/out/build/msvc-release-dll",
+        "--prefix",
+        "${workspaceFolder}/out/install/msvc-release-dll"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CTest: テスト (msvc-release-dll)",
+      "type": "shell",
+      "command": "ctest",
+      "args": [
+        "--preset",
+        "msvc-release-dll"
+      ],
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "CMake: 構成 (clangcl-debug-tidy-static)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--preset",
+        "clangcl-debug-tidy-static"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: ビルド (clangcl-debug-tidy-static)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clangcl-debug-tidy"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "test"
+    },
+    {
+      "label": "CMake: クリーン (clangcl-debug-tidy-static)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clangcl-debug-tidy",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (clangcl-debug-tidy-static)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "CMake: クリーン (clangcl-debug-tidy-static)",
+        "CMake: ビルド (clangcl-debug-tidy-static)"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clangcl-debug-tidy-static)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--install",
+        "${workspaceFolder}/out/build/clangcl-debug-tidy",
+        "--prefix",
+        "${workspaceFolder}/out/install/clangcl-debug-tidy"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: 構成 (clangcl-debug-tidy-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--preset",
+        "clangcl-debug-tidy-dll"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: ビルド (clangcl-debug-tidy-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clangcl-debug-tidy-dll"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "test"
+    },
+    {
+      "label": "CMake: クリーン (clangcl-debug-tidy-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clangcl-debug-tidy-dll",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": [
+        "$msCompile"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (clangcl-debug-tidy-dll)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "CMake: クリーン (clangcl-debug-tidy-dll)",
+        "CMake: ビルド (clangcl-debug-tidy-dll)"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clangcl-debug-tidy-dll)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--install",
+        "${workspaceFolder}/out/build/clangcl-debug-tidy-dll",
+        "--prefix",
+        "${workspaceFolder}/out/install/clangcl-debug-tidy-dll"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: 構成 (clang-debug)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--preset",
+        "clang-debug"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: ビルド (clang-debug)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clang-debug"
+      ],
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: クリーン (clang-debug)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clang-debug",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (clang-debug)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "CMake: クリーン (clang-debug)",
+        "CMake: ビルド (clang-debug)"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clang-debug)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--install",
+        "${workspaceFolder}/out/build/clang-debug",
+        "--prefix",
+        "${workspaceFolder}/out/install/clang-debug"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CTest: テスト (clang-debug)",
+      "type": "shell",
+      "command": "ctest",
+      "args": [
+        "--preset",
+        "clang-debug"
+      ],
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "CMake: 構成 (clang-release)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--preset",
+        "clang-release"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: ビルド (clang-release)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clang-release"
+      ],
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: クリーン (clang-release)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clang-release",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (clang-release)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "CMake: クリーン (clang-release)",
+        "CMake: ビルド (clang-release)"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clang-release)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--install",
+        "${workspaceFolder}/out/build/clang-release",
+        "--prefix",
+        "${workspaceFolder}/out/install/clang-release"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CTest: テスト (clang-release)",
+      "type": "shell",
+      "command": "ctest",
+      "args": [
+        "--preset",
+        "clang-release"
+      ],
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "CMake: 構成 (clang-debug-tidy)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--preset",
+        "clang-debug-tidy"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: ビルド (clang-debug-tidy)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clang-debug-tidy"
+      ],
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "test"
+    },
+    {
+      "label": "CMake: クリーン (clang-debug-tidy)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clang-debug-tidy",
+        "--target",
+        "clean"
+      ],
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "CMake: リビルド (clang-debug-tidy)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "CMake: クリーン (clang-debug-tidy)",
+        "CMake: ビルド (clang-debug-tidy)"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: インストール (clang-debug-tidy)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--install",
+        "${workspaceFolder}/out/build/clang-debug-tidy",
+        "--prefix",
+        "${workspaceFolder}/out/install/clang-debug-tidy"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "CMake: フォーマット (Windows)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "format"
+      ],
+      "problemMatcher": [],
+      "group": "none"
+    },
+    {
+      "label": "CMake: フォーマット (Linux)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "format-linux"
+      ],
+      "problemMatcher": [],
+      "group": "none"
+    },
+    {
+      "label": "CMake: ドキュメント生成 (Windows)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "msvc-debug-static",
+        "--target",
+        "doc"
+      ],
+      "problemMatcher": [],
+      "group": "none"
+    },
+    {
+      "label": "CMake: ドキュメント生成 (Linux)",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "clang-debug",
+        "--target",
+        "doc"
+      ],
+      "problemMatcher": [],
+      "group": "none"
     }
   ]
 }

@@ -1,33 +1,64 @@
 
 cmake_minimum_required(VERSION 3.23)
 
+if (MSVC)
+  add_compile_options(/utf-8)
+endif()
+
 if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
 endif()
 
-project(sample LANGUAGES CXX)
+project(cmake_sample LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(ENABLE_AUTO_CLANG_FORMAT "Run clang-format before building targets" OFF)
+include(GNUInstallDirs)
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Install path prefix" FORCE)
+endif()
 
 include(CTest)
 enable_testing()
 
 add_subdirectory(libs/core)
 
-add_executable(app src/main.cpp)
-target_link_libraries(app PRIVATE core)
+find_package(Boost CONFIG REQUIRED COMPONENTS log log_setup)
+
+set(APP_ETC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/etc")
+
+file(GLOB_RECURSE APP_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp)
+add_executable(app ${APP_SOURCE_FILES})
+target_link_libraries(app PRIVATE core Boost::log Boost::log_setup)
 target_include_directories(app
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
-  target_compile_options(app PRIVATE /utf-8)
-else()
-  target_compile_options(app PRIVATE -finput-charset=UTF-8)
-endif()
+target_compile_options(app
+  PRIVATE
+    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/EHsc>
+    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/utf-8>
+    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-finput-charset=UTF-8>
+)
 target_compile_definitions(app PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
+)
+
+if(EXISTS "${APP_ETC_DIR}")
+  add_custom_command(TARGET app POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${APP_ETC_DIR}"
+            "$<TARGET_FILE_DIR:app>"
+  )
+
+  install(DIRECTORY "${APP_ETC_DIR}/"
+    DESTINATION etc
+  )
+endif()
+
+install(TARGETS app
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 find_program(CLANG_FORMAT_EXE NAMES clang-format)
@@ -41,6 +72,27 @@ elseif(ENABLE_AUTO_CLANG_FORMAT)
 endif()
 
 add_subdirectory(tests)
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+  set(DOXYGEN_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/out/docs")
+  add_custom_command(
+    OUTPUT "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+    COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generate API documentation with Doxygen"
+    VERBATIM
+  )
+  add_custom_target(doc ALL
+    DEPENDS "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+  )
+  install(DIRECTORY "${DOXYGEN_OUTPUT_DIR}/html/"
+    # DESTINATION ${CMAKE_INSTALL_DOCDIR}
+    DESTINATION docs
+  )
+else()
+  message(STATUS "Doxygen was not found. 'doc' target is unavailable.")
+endif()
 
 if(TARGET format AND TARGET core-format)
   add_dependencies(format core-format)

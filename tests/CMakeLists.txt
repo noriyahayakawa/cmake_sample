@@ -9,29 +9,39 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(GTest CONFIG REQUIRED)
-add_executable(tests test_main.cpp)
 
+file(GLOB_RECURSE TEST_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp)
+add_executable(tests ${TEST_SOURCE_FILES})
 target_link_libraries(tests
   PRIVATE
     GTest::gtest
     GTest::gtest_main
     core
 )
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
-  target_compile_options(tests PRIVATE /utf-8)
-else()
-  target_compile_options(tests PRIVATE -finput-charset=UTF-8)
-endif()
+target_compile_options(tests
+  PRIVATE
+    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/EHsc>
+    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/utf-8>
+    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-finput-charset=UTF-8>
+)
 target_compile_definitions(tests PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )
  
+# DLL ビルド時にテスト実行に必要な DLL を tests.exe と同じディレクトリへコピーする
+add_custom_command(TARGET tests POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          $<TARGET_RUNTIME_DLLS:tests>
+          $<TARGET_FILE_DIR:tests>
+  COMMAND_EXPAND_LISTS
+)
+
 include(GoogleTest)
 gtest_discover_tests(tests)
 
 find_program(CLANG_FORMAT_EXE NAMES clang-format)
 if(CLANG_FORMAT_EXE)
   # tests 配下のテストコードを clang-format で整形するターゲット
-  file(GLOB_RECURSE TEST_CXX_SOURCE_FILES CONFIGURE_DEPENDS *.cpp *.hpp)
+  file(GLOB_RECURSE TEST_CXX_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp)
   add_custom_target(tests-format COMMAND ${CLANG_FORMAT_EXE} -i ${TEST_CXX_SOURCE_FILES})
 endif()

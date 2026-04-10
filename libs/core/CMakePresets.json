@@ -1,18 +1,16 @@
 {
   "version": 6,
   "configurePresets": [
-
     {
       "name": "base",
       "hidden": true,
       "generator": "Ninja",
-      "binaryDir": "out/build/${presetName}",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "CMAKE_CXX_STANDARD": "23",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/../../vcpkg/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_FEATURE_FLAGS": "manifests",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "ENABLE_AUTO_CLANG_FORMAT": "ON"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     },
     {
@@ -27,7 +25,7 @@
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x64-windows",
         "CMAKE_C_FLAGS": "/utf-8",
-        "CMAKE_CXX_FLAGS": "/utf-8 /std:c++23"
+        "CMAKE_CXX_FLAGS": "/utf-8"
       }
     },
     {
@@ -45,7 +43,6 @@
         "CMAKE_CXX_FLAGS": "-finput-charset=UTF-8 -fexec-charset=UTF-8"
       }
     },
-
     {
       "name": "clangcl-debug-static",
       "inherits": "base-windows",
@@ -87,21 +84,6 @@
       }
     },
     {
-      "name": "clangcl-debug-tidy-static",
-      "inherits": "clangcl-debug-static",
-      "cacheVariables": {
-        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
-      }
-    },
-    {
-      "name": "clangcl-debug-tidy-dll",
-      "inherits": "clangcl-debug-dll",
-      "cacheVariables": {
-        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
-      }
-    },
-
-    {
       "name": "msvc-debug-static",
       "inherits": "base-windows",
       "cacheVariables": {
@@ -141,7 +123,20 @@
         "BUILD_SHARED_LIBS": "ON"
       }
     },
-
+    {
+      "name": "clangcl-debug-tidy-static",
+      "inherits": "clangcl-debug-static",
+      "cacheVariables": {
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+      }
+    },
+    {
+      "name": "clangcl-debug-tidy-dll",
+      "inherits": "clangcl-debug-dll",
+      "cacheVariables": {
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+      }
+    },
     {
       "name": "clang-debug",
       "inherits": "base-linux",
@@ -169,7 +164,6 @@
     }
   ],
   "buildPresets": [
-
     {
       "name": "clangcl-debug-static",
       "configurePreset": "clangcl-debug-static"
@@ -187,15 +181,6 @@
       "configurePreset": "clangcl-release-dll"
     },
     {
-      "name": "clangcl-debug-tidy",
-      "configurePreset": "clangcl-debug-tidy-static"
-    },
-    {
-      "name": "clangcl-debug-tidy-dll",
-      "configurePreset": "clangcl-debug-tidy-dll"
-    },
-
-    {
       "name": "msvc-debug-static",
       "configurePreset": "msvc-debug-static"
     },
@@ -211,20 +196,14 @@
       "name": "msvc-release-dll",
       "configurePreset": "msvc-release-dll"
     },
-
     {
-      "name": "format",
-      "configurePreset": "clangcl-debug-static",
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Windows"
-      },
-      "targets": [
-        "format"
-      ]
+      "name": "clangcl-debug-tidy-static",
+      "configurePreset": "clangcl-debug-tidy-static"
     },
-
+    {
+      "name": "clangcl-debug-tidy-dll",
+      "configurePreset": "clangcl-debug-tidy-dll"
+    },
     {
       "name": "clang-debug",
       "configurePreset": "clang-debug"
@@ -236,86 +215,6 @@
     {
       "name": "clang-debug-tidy",
       "configurePreset": "clang-debug-tidy"
-    },
-
-    {
-      "name": "format-linux",
-      "configurePreset": "clang-debug",
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Linux"
-      },
-      "targets": [
-        "format"
-      ]
-    }
-  ],
-  "testPresets": [
-
-    {
-      "name": "base-test",
-      "hidden": true,
-      "output": {
-        "outputOnFailure": true
-      }
-    },
-
-    {
-      "name": "clangcl-debug-static",
-      "inherits": "base-test",
-      "configurePreset": "clangcl-debug-static"
-    },
-    {
-      "name": "clangcl-debug-dll",
-      "inherits": "base-test",
-      "configurePreset": "clangcl-debug-dll"
-    },
-    {
-      "name": "clangcl-release-static",
-      "inherits": "base-test",
-      "configurePreset": "clangcl-release-static"
-    },
-    {
-      "name": "clangcl-release-dll",
-      "inherits": "base-test",
-      "configurePreset": "clangcl-release-dll"
-    },
-    {
-      "name": "clangcl-debug",
-      "inherits": "clangcl-debug-static"
-    },
-
-    {
-      "name": "msvc-debug-static",
-      "inherits": "base-test",
-      "configurePreset": "msvc-debug-static"
-    },
-    {
-      "name": "msvc-debug-dll",
-      "inherits": "base-test",
-      "configurePreset": "msvc-debug-dll"
-    },
-    {
-      "name": "msvc-release-static",
-      "inherits": "base-test",
-      "configurePreset": "msvc-release-static"
-    },
-    {
-      "name": "msvc-release-dll",
-      "inherits": "base-test",
-      "configurePreset": "msvc-release-dll"
-    },
-
-    {
-      "name": "clang-debug",
-      "inherits": "base-test",
-      "configurePreset": "clang-debug"
-    },
-    {
-      "name": "clang-release",
-      "inherits": "base-test",
-      "configurePreset": "clang-release"
     }
   ]
 }
