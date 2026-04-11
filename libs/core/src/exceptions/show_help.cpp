@@ -1,4 +1,4 @@
-#include "core/exceptions/show_help.hpp"
+#include "show_help.hpp"
 
 /**
  * @file show_help.cpp

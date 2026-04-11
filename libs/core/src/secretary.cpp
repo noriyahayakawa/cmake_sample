@@ -3,7 +3,7 @@
  * @brief secretary の実装を定義する。
  */
 
-#include "core/secretary.hpp"
+#include "secretary.hpp"
 
 namespace core {
 

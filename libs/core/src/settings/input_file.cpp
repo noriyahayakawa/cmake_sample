@@ -1,4 +1,4 @@
-#include "core/settings/input_file.hpp"
+#include "settings/input_file.hpp"
 
 /**
  * @file input_file.cpp

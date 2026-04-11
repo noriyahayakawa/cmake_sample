@@ -3,7 +3,7 @@
  * @brief treasurer の実装を定義する。
  */
 
-#include "core/treasurer.hpp"
+#include "treasurer.hpp"
 
 namespace core {
 

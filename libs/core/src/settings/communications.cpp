@@ -1,4 +1,4 @@
-#include "core/settings/communications.hpp"
+#include "settings/communications.hpp"
 
 /**
  * @file communications.cpp

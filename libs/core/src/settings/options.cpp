@@ -1,12 +1,12 @@
-#include "core/settings/options.hpp"
+#include "settings/options.hpp"
 
 /**
  * @file options.cpp
  * @brief 設定管理シングルトンクラスの読み込み処理を実装する。
  */
 
-#include "core/exceptions/my_error.hpp"
-#include "core/exceptions/show_help.hpp"
+#include "exceptions/my_error.hpp"
+#include "exceptions/show_help.hpp"
 #include <boost/log/trivial.hpp>
 #include <boost/system/system_error.hpp>
 #include <boost/version.hpp>

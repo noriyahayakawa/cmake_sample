@@ -7,10 +7,10 @@
 #include <windows.h>
 #endif
 
-#include "core/exceptions/my_error.hpp"
-#include "core/exceptions/show_help.hpp"
-#include "core/settings/options.hpp"
-#include "core/student_council.hpp"
+#include "exceptions/my_error.hpp"
+#include "exceptions/show_help.hpp"
+#include "settings/options.hpp"
+#include "student_council.hpp"
 #include <iostream>
 
 #include <boost/filesystem.hpp>

@@ -3,7 +3,7 @@
  * @brief president の実装を定義する。
  */
 
-#include "core/president.hpp"
+#include "president.hpp"
 
 namespace core {
 

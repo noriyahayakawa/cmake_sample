@@ -1,4 +1,4 @@
-#include "core/exceptions/my_error.hpp"
+#include "my_error.hpp"
 
 /**
  * @file my_error.cpp

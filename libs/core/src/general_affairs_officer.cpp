@@ -3,7 +3,7 @@
  * @brief general_affairs_officer の既定実装を定義する。
  */
 
-#include "core/general_affairs_officer.hpp"
+#include "general_affairs_officer.hpp"
 
 namespace core {
 

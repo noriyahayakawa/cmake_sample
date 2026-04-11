@@ -1,4 +1,4 @@
-#include "core/settings/commons.hpp"
+#include "settings/commons.hpp"
 
 /**
  * @file commons.cpp

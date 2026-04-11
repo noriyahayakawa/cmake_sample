@@ -3,7 +3,7 @@
  * @brief historian の実装を定義する。
  */
 
-#include "core/historian.hpp"
+#include "historian.hpp"
 #include <boost/log/trivial.hpp>
 #include <boost/version.hpp>
 
