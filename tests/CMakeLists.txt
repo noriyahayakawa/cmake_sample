@@ -17,11 +17,21 @@ target_link_libraries(tests
     GTest::gtest_main
     core
 )
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
-  target_compile_options(tests PRIVATE /utf-8)
-else()
-  target_compile_options(tests PRIVATE -finput-charset=UTF-8)
-endif()
+target_compile_options(tests
+  PRIVATE
+    # MSVC / clang-cl: C++ 例外処理モデルを有効化する。
+    # tests は core 経由で Boost.Asio ヘッダを取り込むため、boost::throw_exception が
+    # 参照され、/EHsc がないとリンク時に未定義シンボルエラーになる。
+    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/EHsc>
+    # MSVC / clang-cl: ソースファイルおよび実行ファイルの文字セットを UTF-8 に統一する。
+    $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:/utf-8>
+    # clang-cl: /Zc:__cplusplus がないと __cplusplus が常に 199711L になる。
+    # Boost.Asio は __cplusplus >= 202002 を条件に awaitable 等を有効化するため必須。
+    # /std:c++NN は CMAKE_CXX_STANDARD が自動付与するので重複指定しない。
+    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>:/Zc:__cplusplus>
+    # Linux clang: ソース文字セットを UTF-8 に設定 (/utf-8 相当)。
+    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-finput-charset=UTF-8>
+)
 target_compile_definitions(tests PRIVATE
     $<$<CONFIG:Debug>:MY_DEBUG>
 )

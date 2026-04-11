@@ -17,6 +17,7 @@
 ├── CMakePresets.json
 ├── vcpkg.json
 ├── libs/
+│   ├── comm/
 │   └── core/
 ├── src/
 │   └── main.cpp
@@ -24,6 +25,7 @@
 │   ├── CMakeLists.txt
 │   └── test_main.cpp
 ├── .vscode/
+│   ├── launch.json
 │   └── tasks.json
 └── vcpkg/
 ```
@@ -95,6 +97,9 @@ cmake --build --preset clangcl-debug-static --clean-first
 
 # 3) テスト
 ctest --preset clangcl-debug-static
+
+# 4) インストール
+cmake --install out/build/clangcl-debug-static
 ```
 
 ### Windows (MSVC, static Debug)
@@ -107,18 +112,24 @@ tools/cmake-msvc-x64.cmd --build --preset msvc-debug-static --clean-first
 
 # 3) テスト
 ctest --preset msvc-debug-static
+
+# 4) インストール
+cmake --install out/build/msvc-debug-static
 ```
 
-### Linux (clang, Debug)
+### Linux (clang, Debug static)
 ```bash
 # 1) 構成
-cmake --preset clang-debug
+cmake --preset clang-debug-static
 
 # 2) リビルド（clean-first）
-cmake --build --preset clang-debug --clean-first
+cmake --build --preset clang-debug-static --clean-first
 
 # 3) テスト
-ctest --preset clang-debug
+ctest --preset clang-debug-static
+
+# 4) インストール
+cmake --install out/build/clang-debug-static
 ```
 
 ### VS Code タスクを使う場合
@@ -126,6 +137,7 @@ ctest --preset clang-debug
 1. CMake: 構成 (...) を実行
 2. CMake: リビルド (...) を実行
 3. CTest: テスト (...) を実行
+4. CMake: インストール (...) を実行
 
 補足:
 - clang-cl / MSVC の preset では、ENABLE_AUTO_CLANG_FORMAT が ON のため、ビルド前に clang-format が自動実行されます。
@@ -148,8 +160,10 @@ ctest --preset clang-debug
 - msvc-release-dll
 
 #### Linux (clang)
-- clang-debug
-- clang-release
+- clang-debug-static
+- clang-debug-shared
+- clang-release-static
+- clang-release-shared
 
 #### tidy 用 build preset
 - clangcl-debug-tidy
@@ -169,8 +183,10 @@ ctest --preset clang-debug
 - msvc-debug-dll
 - msvc-release-static
 - msvc-release-dll
-- clang-debug
-- clang-release
+- clang-debug-static
+- clang-debug-shared
+- clang-release-static
+- clang-release-shared
 - clangcl-debug (エイリアス)
 
 ## ビルドとテスト
@@ -196,14 +212,28 @@ tools/cmake-msvc-x64.cmd --build --preset msvc-debug-static
 ctest --preset msvc-debug-static
 ```
 
-### clang (Linux, Debug)
+### clang (Linux, Debug static)
 ```bash
-cmake --preset clang-debug
-cmake --build --preset clang-debug
-ctest --preset clang-debug
+cmake --preset clang-debug-static
+cmake --build --preset clang-debug-static
+ctest --preset clang-debug-static
 ```
 
-成果物は out/build/<preset名>/ に出力されます。
+### clang (Linux, Debug shared)
+```bash
+cmake --preset clang-debug-shared
+cmake --build --preset clang-debug-shared
+ctest --preset clang-debug-shared
+```
+
+### clang (Linux, Release static)
+```bash
+cmake --preset clang-release-static
+cmake --build --preset clang-release-static
+ctest --preset clang-release-static
+```
+
+ビルド成果物は `out/build/<preset名>/`、インストール成果物は `out/install/<preset名>/` に出力されます。
 
 ## clang-format 自動実行
 
@@ -220,13 +250,18 @@ cmake --preset clangcl-debug-static -DENABLE_AUTO_CLANG_FORMAT=OFF
 
 .vscode/tasks.json には以下が定義されています。
 
-- 構成: clang-cl / MSVC (Debug, Release)
-- ビルド: clang-cl / MSVC (Debug, Release)
-- クリーン: clang-cl / MSVC (Debug, Release)
-- リビルド: clang-cl / MSVC (Debug, Release)
-- テスト: CTest (clang-cl Debug)
-- 補助: 静的解析, フォーマット
+- 構成: clang-cl / MSVC (Debug/Release × static/dll)
+- ビルド: clang-cl / MSVC (Debug/Release × static/dll)
+- クリーン: clang-cl / MSVC (Debug/Release × static/dll)
+- リビルド: clang-cl / MSVC (Debug/Release × static/dll)
+- インストール: clang-cl / MSVC (Debug/Release × static/dll)
+- テスト: CTest (clang-cl / MSVC × Debug/Release × static/dll)
+- 補助: 静的解析 (clang-tidy static/dll), フォーマット
+- Linux / WSL2: clang (Debug/Release × static/shared) の構成・ビルド・クリーン・リビルド・インストール・テスト
 
 例:
-- CMake: リビルド (clang-cl Debug)
-- CMake: クリーン (MSVC Release)
+- CMake: リビルド (clang-cl Debug static)
+- CMake: ビルド (clang-cl Debug dll)
+- CMake: クリーン (MSVC Release dll)
+- CMake: インストール (clang-cl Debug static)
+- CTest: テスト (clang-cl Debug static)
