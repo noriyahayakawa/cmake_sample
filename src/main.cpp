@@ -2,7 +2,16 @@
 
 /**
  * @file main.cpp
- * @brief アプリケーションの起動処理、引数解析、ログ初期化を実装する。
+ * @brief
+ * アプリケーションのエントリポイントと主要な初期化・引数解析処理を実装する。
+ *
+ * - ログ機能の初期化（Boost.Log）
+ * - コマンドライン引数解析（Boost.Program_options）
+ * - 設定ファイルの読み込み・管理
+ * - 例外処理とエラーハンドリング
+ *
+ * @author (your name)
+ * @date (update date)
  */
 
 namespace logging = boost::log;
@@ -18,19 +27,11 @@ namespace {
  * @brief Boost.Log の初期設定を行う。
  * @param executable_path 実行ファイルパス（`argv[0]`）。
  * @details
- * - 共通属性を登録する。
- * - 標準エラー出力向けのコンソール sink を生成し、`info` 以上を出力する。
- * - 実行ファイルと同じディレクトリ配下に `logs/` を作成する。
- * - ファイルログは `logs/app_YYYYMMDD.log` 形式（時刻なし）で
- *   `trace` 以上を記録する。
- * - ローテーション済みファイルは `logs/app_YYYYMMDD_NNNNN.log` 形式で保存する。
- * - 当日分ファイルが既に存在する場合は追記モードで開く。
- * - 終了時の最終ローテーションを無効化し、通常終了では追記を継続する。
- * - 日付が変わったタイミング（毎日 00:00）で新しい日付ファイルへ切り替える。
- * - ファイルログには時刻、重大度、スレッドID、メッセージを出力する。
- * - グローバル属性として `ThreadID` を追加する。
- * @throws boost::filesystem::filesystem_error
- * ログディレクトリ作成に失敗した場合に送出される。
+ * - 共通属性を登録し、標準エラー出力とファイルへのログ出力を構成する。
+ * - ファイルログは日付ごとにローテーションし、追記モードで保存。
+ * - ログには時刻・重大度・スレッドID・メッセージを出力。
+ * - グローバル属性として `ThreadID` を追加。
+ * @throws boost::filesystem::filesystem_error ログディレクトリ作成失敗時。
  */
 static void init_logging(const char *executable_path) {
   const fs::path exe_dir =
@@ -39,7 +40,7 @@ static void init_logging(const char *executable_path) {
   const fs::path log_file_pattern = log_dir / "app_%Y%m%d.log";
   const fs::path rotated_file_pattern = log_dir / "app_%Y%m%d_%2N.log";
 
-  boost::filesystem::create_directories(log_dir);
+  fs::create_directories(log_dir);
 
   logging::add_common_attributes();
 
@@ -79,20 +80,18 @@ static void init_logging(const char *executable_path) {
 }
 
 /**
- * @brief コマンドライン引数を解析して入力ファイルパスを決定する。
+ * @brief コマンドライン引数を解析し、入力ファイルパスを決定する。
  * @param argc コマンドライン引数の個数。
  * @param argv コマンドライン引数配列。
  * @return 読み込み対象として確定した入力ファイルパス。
- * @throws core::exceptions::show_help
- * `-h` または `--help` が指定された場合に送出される。
+ * @throws core::exceptions::show_help `-h` または `--help` 指定時。
  * @throws core::exceptions::my_error
- * 相対パス指定時に入力ファイルが見つからない場合、または状態取得に失敗した場合に送出される。
+ * 入力ファイルが見つからない場合や状態取得失敗時。
  * @details
- * - 位置引数 1 個目または `-i` / `--input` から入力ファイル名を取得する。
- * - 相対パスで見つからない場合は実行ファイル配置ディレクトリ基準でも探索する。
- * - 参照先が存在しても通常ファイルでない場合は失敗として扱う。
- * @note
- * 絶対パスが存在しない場合はこの関数では例外を送出せず、そのままパスを返す。
+ * - 位置引数または `-i`/`--input` で入力ファイル名を取得。
+ * - 相対パスで見つからない場合は実行ファイルディレクトリ基準で探索。
+ * - 通常ファイルでない場合は例外送出。
+ * @note 絶対パスが存在しない場合は例外を送出せず、そのまま返す。
  */
 const fs::path parse_args(int argc, char *argv[]) {
   fs::path exe_dir = fs::absolute(fs::path(argv[0])).parent_path();
@@ -144,7 +143,7 @@ const fs::path parse_args(int argc, char *argv[]) {
           BOOST_THROW_EXCEPTION(
               core::exceptions::my_error{}
               << core::exceptions::errinfo_message(
-                     "入力ファイルが存在しません。")
+                     "入力ファイルがみつかりませんでした。")
               << core::exceptions::errinfo_path(input_file.string()));
         }
       }
@@ -156,7 +155,7 @@ const fs::path parse_args(int argc, char *argv[]) {
         core::exceptions::my_error{}
         << core::exceptions::errinfo_message(
                "上位レベルのエラーが発生しました。")
-        << boost::errinfo_nested_exception(std::current_exception()));
+        << boost::errinfo_nested_exception(boost::copy_exception(e)));
   }
 }
 
@@ -167,20 +166,18 @@ const fs::path parse_args(int argc, char *argv[]) {
  * @param argc コマンドライン引数の個数。
  * @param argv コマンドライン引数の配列。
  * @details
- * - 起動直後にログ機能を初期化し、以後の例外情報をログ出力できる状態にする。
- * - Windows 環境ではコンソールのコードページを UTF-8
- * に設定し、終了時に復元する。
- * - コマンドライン引数を解析して入力ファイルパスを決定する。
- * - 入力ファイルを読み込み、共通設定を初期化する。
- * - `-h` / `--help` が指定された場合はヘルプを表示して正常終了する。
- * @return 正常終了時は 0、入力ファイル読み込み失敗時は 1、
- *         boost 例外時は 1、std 例外時は 2、不明な例外時は 3。
+ * -
+ * ログ初期化、コマンドライン解析、設定ファイル読み込み、メイン処理実行を行う。
+ * - WindowsではコンソールのコードページをUTF-8に一時変更。
+ * - 例外発生時は内容に応じてログ出力・終了コードを返す。
+ * @retval 0 正常終了
+ * @retval INT_MAX-1 Boost例外発生
+ * @retval INT_MAX-2 std例外発生
+ * @retval INT_MAX-3 不明な例外発生
  */
 int main(int argc, char *argv[]) {
 
 #ifdef _WIN32
-  const UINT oldOut = GetConsoleOutputCP();
-  const UINT oldIn = GetConsoleCP();
   struct ConsoleCodePageGuard {
     UINT old_output_cp;
     UINT old_input_cp;
@@ -190,11 +187,10 @@ int main(int argc, char *argv[]) {
       SetConsoleCP(old_input_cp);
     }
   };
-  const ConsoleCodePageGuard code_page_guard{oldOut, oldIn};
+  const ConsoleCodePageGuard code_page_guard{GetConsoleOutputCP(),
+                                             GetConsoleCP()};
   SetConsoleOutputCP(CP_UTF8);
   SetConsoleCP(CP_UTF8);
-#else
-  int main(int argc, char *argv[]) {
 #endif
 
   try {
@@ -215,16 +211,24 @@ int main(int argc, char *argv[]) {
       std::cout << "  -i [--input] arg    入力ファイル" << std::endl;
       std::cout << "  -h [--help]         ヘルプを表示" << std::endl;
     }
-    return 0;
   } catch (const boost::exception &e) {
-    BOOST_LOG_TRIVIAL(fatal) << boost::diagnostic_information(e) << std::endl;
-    return 1;
+    BOOST_LOG_TRIVIAL(debug) << boost::diagnostic_information(e) << std::endl;
+    if (const std::string *msg =
+            boost::get_error_info<core::exceptions::errinfo_message>(e)) {
+      BOOST_LOG_TRIVIAL(fatal) << "予期しない Boost 例外が発生しました。\""
+                               << *msg << "\"" << std::endl;
+    } else {
+      BOOST_LOG_TRIVIAL(fatal)
+          << "予期しない Boost 例外が発生しました。" << std::endl;
+    }
+    return INT_MAX - 1;
   } catch (const std::exception &e) {
-    BOOST_LOG_TRIVIAL(fatal) << e.what() << std::endl;
-    return 2;
+    BOOST_LOG_TRIVIAL(fatal)
+        << "予期しない例外が発生しました。\"" << e.what() << "\"" << std::endl;
+    return INT_MAX - 2;
   } catch (...) {
-    BOOST_LOG_TRIVIAL(fatal) << "不明なエラーが発生しました。" << std::endl;
-    return 3;
+    BOOST_LOG_TRIVIAL(fatal) << "予期しない例外が発生しました。" << std::endl;
+    return INT_MAX - 3;
   }
 
   return 0;

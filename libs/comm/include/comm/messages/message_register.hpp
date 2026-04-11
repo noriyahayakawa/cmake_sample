@@ -5,7 +5,8 @@
  * @brief TCP メッセージの登録クラスを宣言する。
  */
 
- #include "comm/messages/message_factory.hpp"
+#include "comm_export.hpp"
+#include "comm/messages/message_factory.hpp"
 
 namespace comm::messages {
 
@@ -24,7 +25,7 @@ namespace comm::messages {
         std::is_invocable_v<decltype(&T::type)> &&
         std::is_convertible_v<std::invoke_result_t<decltype(&T::type)>, std::string>
     >>
-    struct message_register {
+    struct COMM_EXPORT message_register {
         /**
          * @brief T 型のインスタンスを生成して返すクリエーター関数。
          * @return 新しく生成した T 型オブジェクトの shared_ptr。

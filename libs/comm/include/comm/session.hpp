@@ -5,6 +5,7 @@
  * @brief TCP セッションの基底クラスを宣言する。
  */
 
+#include "comm_export.hpp"
 #include <boost/asio.hpp>
 #include <boost/signals2.hpp>
 
@@ -21,7 +22,7 @@ using boost::signals2::signal;
  * 個別の接続ごとのセッション管理を担う基底型。
  * 現在の実装は空で、将来の拡張ポイントとして定義されている。
  */
-class session : public std::enable_shared_from_this<session> {
+class COMM_EXPORT session : public std::enable_shared_from_this<session> {
 public:
   using ptr = std::shared_ptr<session>;
   using error_signal = signal<void(ptr, boost::system::error_code)>;

@@ -3,6 +3,7 @@
  * @brief 容量上限付きスレッドセーフブロッキングキュー
  */
 
+#include "comm_export.hpp"
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread.hpp>
 #include <cstddef>
@@ -21,7 +22,7 @@ namespace comm::utilities {
  *
  * @tparam T キューに格納する要素の型。
  */
-template <class T> class bounded_blocking_queue {
+template <class T> class COMM_EXPORT bounded_blocking_queue {
 public:
   /**
    * @brief キューを構築する。

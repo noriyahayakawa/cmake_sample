@@ -6,10 +6,12 @@
  */
 
 #include "core/settings/input_file.hpp"
+#include "core_export.hpp"
 #include <boost/core/noncopyable.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/serialization/singleton.hpp>
 #include <boost/system/error_code.hpp>
+#include <mutex>
 
 namespace core::settings {
 
@@ -62,7 +64,7 @@ public:
    * 解析結果は `input_file_` に格納され、`commons` キーが存在しない場合は
    * 既定構築した `commons` を保持する。
    */
-  void read_input_file(const fs::path path);
+  void read_input_file(const fs::path &path);
 
   /**
    * @brief 最後に読み込んだ入力ファイル内容を返す。

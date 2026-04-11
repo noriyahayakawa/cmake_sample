@@ -10,6 +10,7 @@
 #include "core/secretary.hpp"
 #include "core/treasurer.hpp"
 #include "core/vice_president.hpp"
+#include "core_export.hpp"
 #include <boost/asio.hpp>
 #include <boost/serialization/singleton.hpp>
 

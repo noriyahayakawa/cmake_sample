@@ -7,8 +7,9 @@
 
 #include "core/settings/i_input_data.hpp"
 #include "core_export.hpp"
+#include <boost/filesystem.hpp>
 #include <boost/json.hpp>
-#include <optional>
+#include <boost/optional.hpp>
 #include <string>
 #include <vector>
 
@@ -28,9 +29,9 @@ struct CORE_EXPORT server_settings : public i_input_data {
   /** @brief サーバを有効にするかどうか。 */
   bool enable = false;
   /** @brief サーバの識別名。 */
-  std::string name;
+  std::string id;
   /** @brief サーバのサービス名またはポート番号文字列。 */
-  std::optional<std::string> service;
+  std::string service;
 
   virtual void
   resolve_relative_path(const boost::filesystem::path &path) override;
@@ -50,11 +51,11 @@ struct CORE_EXPORT client_settings : public i_input_data {
   /** @brief クライアントを有効にするかどうか。 */
   bool enable = false;
   /** @brief クライアントの識別名。 */
-  std::string name;
+  std::string id;
   /** @brief 接続先アドレス。 */
-  std::optional<std::string> host;
+  std::string host;
   /** @brief 接続先サービス名またはポート番号文字列。 */
-  std::optional<std::string> service;
+  std::string service;
 
   virtual void
   resolve_relative_path(const boost::filesystem::path &path) override;

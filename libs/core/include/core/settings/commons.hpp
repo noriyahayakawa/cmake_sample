@@ -7,8 +7,12 @@
 
 #include "core/settings/i_input_data.hpp"
 #include "core_export.hpp"
+#include <boost/filesystem.hpp>
 #include <boost/json.hpp>
+#include <mutex>
 #include <string>
+
+namespace fs = boost::filesystem;
 
 namespace core::settings {
 
@@ -23,10 +27,12 @@ struct CORE_EXPORT commons : public i_input_data {
   /** @brief 仮想デストラクタ。 */
   virtual ~commons() override = default;
 
-  /** @brief アプリケーション名 */
+  /** @brief アプリケーション名。 */
   std::string app_name;
-  /** @brief アプリケーションのバージョン文字列 */
+  /** @brief アプリケーションのバージョン文字列。 */
   std::string version;
+  /** @brief 出力先ディレクトリパス。省略時は `./output`。 */
+  fs::path output_dir;
 
   virtual void
   resolve_relative_path(const boost::filesystem::path &path) override;
