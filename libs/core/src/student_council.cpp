@@ -24,11 +24,11 @@ void student_council::hello() const {
  * @details
  * 現在の実装は空で、将来の拡張ポイントとして保持している。
  */
-asio::awaitable<void> student_council::run() {
-  auto executor_ = co_await asio::this_coro::executor;
+void student_council::run() {
+  auto executor_ = asio::this_coro::executor;
   const auto &options = settings::options::instance();
 
-  co_return;
+  return;
 }
 
 } // namespace core

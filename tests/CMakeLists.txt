@@ -8,9 +8,23 @@ project(sample_core_tests LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(GTest CONFIG REQUIRED)
-add_executable(tests test_main.cpp)
+file(GLOB_RECURSE TESTS_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB_RECURSE TESTS_PRIVATE_HEADER_FILES CONFIGURE_DEPENDS src/*.h src/*.hpp)
 
+set(TESTS_PRIVATE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src")
+foreach(test_header IN LISTS TESTS_PRIVATE_HEADER_FILES)
+  get_filename_component(test_header_dir "${test_header}" DIRECTORY)
+  list(APPEND TESTS_PRIVATE_INCLUDE_DIRS "${test_header_dir}")
+endforeach()
+list(REMOVE_DUPLICATES TESTS_PRIVATE_INCLUDE_DIRS)
+
+find_package(GTest CONFIG REQUIRED)
+add_executable(tests ${TESTS_SOURCE_FILES})
+
+target_include_directories(tests
+  PRIVATE
+    ${TESTS_PRIVATE_INCLUDE_DIRS}
+)
 target_link_libraries(tests
   PRIVATE
     GTest::gtest
@@ -42,6 +56,6 @@ gtest_discover_tests(tests)
 find_program(CLANG_FORMAT_EXE NAMES clang-format)
 if(CLANG_FORMAT_EXE)
   # tests 配下のテストコードを clang-format で整形するターゲット
-  file(GLOB_RECURSE TEST_CXX_SOURCE_FILES CONFIGURE_DEPENDS *.cpp *.hpp)
+  file(GLOB_RECURSE TEST_CXX_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp)
   add_custom_target(tests-format COMMAND ${CLANG_FORMAT_EXE} -i ${TEST_CXX_SOURCE_FILES})
 endif()

@@ -3,7 +3,7 @@
  * @brief bounded_blocking_queue の単体テスト。
  */
 
-#include "utility/bounded_blocking_queue.hpp"
+#include "comm/utilities/bounded_blocking_queue.hpp"
 
 #include <atomic>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -11,7 +11,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using Queue = core::utility::bounded_blocking_queue<int>;
+using Queue = comm::utilities::bounded_blocking_queue<int>;
 
 /**
  * @brief 構築直後のキューはサイズが 0 でクローズされていないことを確認する。
