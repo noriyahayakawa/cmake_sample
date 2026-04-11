@@ -40,10 +40,22 @@
 | LLVM | 最新推奨 | clang-cl, clang-tidy, clang-format | `winget install --id LLVM.LLVM -e` |
 | CMake | 3.23+ | | `winget install --id Kitware.CMake -e` |
 | Ninja | 最新推奨 | | `winget install --id Ninja-build.Ninja -e` |
+| Graphviz | 最新推奨 | Doxygen の依存グラフ生成に使用 | `winget install --id Graphviz.Graphviz -e` |
 
 注意:
 - msvc-* プリセットは cl.exe を使用します。
 - VS Code タスクでは tools/cmake-msvc-x64.cmd 経由で MSVC 環境を設定します。
+
+環境変数 Path に以下が含まれていることを確認してください。
+
+| パス例 | 対象ツール |
+|--------|----------|
+| `C:\Program Files\LLVM\bin` | clang-cl, clang-tidy, clang-format |
+| `C:\Program Files\CMake\bin` | cmake |
+| `C:\Program Files\Ninja` | ninja |
+| `C:\Program Files\Graphviz\bin` | dot (Doxygen グラフ生成) |
+
+winget でインストールした場合は自動的に Path に追加されますが、反映には**シェルの再起動**が必要です。
 
 ### Linux / WSL2 (Ubuntu 22.04+)
 | ツール | バージョン | 備考 |
@@ -55,11 +67,19 @@
 | curl, zip, unzip, tar | | vcpkg 依存 |
 | autoconf, autoconf-archive, automake, libtool | | vcpkg が libbacktrace をビルドする際に必要 |
 | python3 | 3.x | vcpkg 内部処理で使用 |
+| Graphviz | 最新推奨 | Doxygen の依存グラフ生成に使用 |
 
 ```bash
 sudo apt install -y clang clang-tidy clang-format cmake ninja-build \
                     curl zip unzip tar pkg-config \
-                    autoconf autoconf-archive automake libtool python3
+                    autoconf autoconf-archive automake libtool python3 graphviz
+```
+
+apt でインストールした場合は `/usr/bin` に配置され、通常 PATH への追加は不要です。  
+カスタムビルドの LLVM を使用する場合は、以下を `~/.bashrc` 等に追加してください。
+
+```bash
+export PATH="/usr/lib/llvm-<version>/bin:$PATH"
 ```
 
 #### WSL2 固有の注意

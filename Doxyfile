@@ -9,15 +9,17 @@ OUTPUT_LANGUAGE        = Japanese
 USE_MDFILE_AS_MAINPAGE = README.md
 MARKDOWN_SUPPORT       = YES
 
-INPUT                  = include \
+INPUT                  = README.md \
+                         include \
                          src \
                          libs/core/include \
                          libs/core/src \
                          libs/comm/include \
-                         libs/comm/src
+                         libs/comm/src \
+                         tests/src
 FILE_PATTERNS          = *.h *.hpp *.c *.cc *.cpp *.md
 RECURSIVE              = YES
-EXCLUDE_PATTERNS       = */out/* */vcpkg/* */tests/*
+EXCLUDE_PATTERNS       = */out/* */vcpkg/*
 
 EXTRACT_ALL            = NO
 EXTRACT_PRIVATE        = NO
