@@ -68,3 +68,36 @@ if(ENABLE_AUTO_CLANG_FORMAT AND TARGET format)
     add_dependencies(tests format)
   endif()
 endif()
+
+# app 実行ファイルをインストールする
+include(GNUInstallDirs)
+install(TARGETS app
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+# etc 下のファイルをビルド時に app.exe と同じフォルダへコピーする
+file(GLOB_RECURSE ETC_FILES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/etc/*)
+foreach(_etc_file IN LISTS ETC_FILES)
+  cmake_path(GET _etc_file FILENAME _etc_filename)
+  add_custom_command(
+    TARGET app POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      ${_etc_file}
+      $<TARGET_FILE_DIR:app>/${_etc_filename}
+    COMMENT "Copying etc/${_etc_filename} to build directory"
+  )
+endforeach()
+
+# etc 下のファイルをインストール先の etc へコピーする
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/etc/
+  DESTINATION etc
+)
+
+# Doxygen で生成されたドキュメントが存在する場合はインストールに含める
+install(CODE "
+  if(EXISTS \"${CMAKE_CURRENT_SOURCE_DIR}/out/docs\")
+    file(INSTALL \"${CMAKE_CURRENT_SOURCE_DIR}/out/docs/\"
+      DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}\"
+    )
+  endif()
+")

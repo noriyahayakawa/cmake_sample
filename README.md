@@ -35,7 +35,7 @@
 ### Windows
 | ツール | バージョン | 備考 | winget コマンド |
 |--------|-----------|------|-----------------|
-| Windows | 10 / 11 | | (OS のため対象外) |
+| Windows | 11 | | (OS のため対象外) |
 | Visual Studio 2022 | Community / Build Tools | MSVC v143 | `winget install --id Microsoft.VisualStudio.2022.BuildTools -e --override "--wait --quiet --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"` |
 | LLVM | 最新推奨 | clang-cl, clang-tidy, clang-format | `winget install --id LLVM.LLVM -e` |
 | CMake | 3.23+ | | `winget install --id Kitware.CMake -e` |
