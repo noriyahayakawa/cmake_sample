@@ -911,6 +911,14 @@
       "args": ["-d", "Ubuntu-24.04", "--", "cmake", "--build", "--preset", "format-linux"],
       "problemMatcher": [],
       "group": "none"
+    },
+    {
+      "label": "Doxygen: ドキュメント生成",
+      "type": "shell",
+      "command": "doxygen",
+      "args": ["Doxyfile"],
+      "problemMatcher": [],
+      "group": "none"
     }
   ]
 }
