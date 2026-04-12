@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "core_export.hpp"
 #include <boost/filesystem.hpp>
 
 namespace core::settings {
@@ -12,7 +13,7 @@ namespace core::settings {
 /**
  * @brief 入力データ共通のパス解決インターフェース。
  */
-struct i_input_data {
+struct CORE_EXPORT i_input_data {
   /** @brief 仮想デストラクタ。 */
   virtual ~i_input_data() = default;
 

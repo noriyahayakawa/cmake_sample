@@ -6,7 +6,13 @@
  */
 
 namespace core::settings {
-void commons::resolve_relative_path(const boost::filesystem::path &path) {}
+
+void commons::resolve_relative_path(const boost::filesystem::path &path) {
+  if (!output_dir.is_absolute()) {
+    output_dir = path / output_dir;
+  }
+}
+
 } // namespace core::settings
 
 namespace boost::json {
@@ -19,6 +25,8 @@ namespace boost::json {
  * - `jv` を JSON オブジェクトとして解釈する。
  * - `appName` と `version` をキー存在確認付きで読み取る。
  * - キーが存在しない場合は対応するメンバへ空文字を設定する。
+ * - `output_dir` をキー存在確認付きで読み取る。
+ * - キーが存在しない場合はデフォルトで `./output` を設定する。
  */
 ::core::settings::commons
 tag_invoke(boost::json::value_to_tag<::core::settings::commons>,
@@ -31,6 +39,9 @@ tag_invoke(boost::json::value_to_tag<::core::settings::commons>,
   result.version = obj.if_contains("version")
                        ? value_to<std::string>(obj.at("version"))
                        : "";
+  result.output_dir = obj.if_contains("output_dir")
+                          ? value_to<fs::path>(obj.at("output_dir"))
+                          : fs::path("./output");
   return result;
 }
 
@@ -51,6 +62,7 @@ void tag_invoke(value_from_tag, value &jv,
   if (!commons.version.empty()) {
     obj["version"] = value_from(commons.version);
   }
+  obj["output_dir"] = value_from(commons.output_dir);
   jv = std::move(obj);
 }
 

@@ -9,7 +9,7 @@
 namespace comm {
 async_tcp_server::async_tcp_server(asio::io_context &io_context) {}
 
-asio::awaitable<void>
+boost::asio::awaitable<void>
 async_tcp_server::start_accepting(const std::string &service) {
   auto executor = co_await asio::this_coro::executor;
   if (!service.empty()) {
@@ -24,7 +24,7 @@ async_tcp_server::start_accepting(const std::string &service) {
           asio::make_strand(executor),
           asio::as_tuple(asio::use_awaitable));
       if (ec == asio::error::operation_aborted) {
-        break; // cancel() による正常終了
+        break;
       }
       if (!ec) {
         auto new_session = std::make_shared<session>(std::move(socket));

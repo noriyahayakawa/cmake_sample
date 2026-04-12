@@ -58,11 +58,12 @@ bool is_jsonc_path(const fs::path &path) {
  *   既定構築した `commons` を保持する。
  * - 失敗時は発生した標準例外を `my_error` に包み直して再送出する。
  */
-void options::read_input_file(const fs::path path) {
+void options::read_input_file(const fs::path &path) {
   try {
     input_file_path_ = path;
-    std::ifstream ifs(input_file_path_.string(), std::ios::binary);
-    if (!ifs) {
+    std::ifstream ifs(input_file_path_.string(),
+                      std::ios::in | std::ios::binary);
+    if (!ifs || !ifs.is_open()) {
       BOOST_THROW_EXCEPTION(boost::system::system_error(
           boost::system::error_code(errno, boost::system::generic_category()),
           "ファイルを開けませんでした"));

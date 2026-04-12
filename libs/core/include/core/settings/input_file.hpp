@@ -8,6 +8,7 @@
 #include "core/settings/commons.hpp"
 #include "core/settings/communications.hpp"
 #include "core/settings/i_input_data.hpp"
+#include "core_export.hpp"
 #include <boost/json.hpp>
 
 namespace core::settings {

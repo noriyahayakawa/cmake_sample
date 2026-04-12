@@ -6,14 +6,14 @@
     "communications": {
         "server": {
             "enable": true,
-            "name": "Server A",
+            "id": "Server A",
             "service": "8080"
         },
         "clients": [
             {
                 "enable": true,
-                "name": "Client A",
-                "address": "127.0.0.1",
+                "id": "Client A",
+                "host": "127.0.0.1",
                 "service": "8080"
             }
         ]

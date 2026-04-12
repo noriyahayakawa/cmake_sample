@@ -28,6 +28,10 @@ foreach(core_header IN LISTS CORE_PRIVATE_HEADER_FILES)
 endforeach()
 list(REMOVE_DUPLICATES CORE_PRIVATE_INCLUDE_DIRS)
 
+if(NOT TARGET comm)
+  message(FATAL_ERROR "coreライブラリのビルドにはcommライブラリが必要です。libs/comm/CMakeLists.txtが正しく追加されているか確認してください。")
+endif()
+
 add_library(core ${CORE_SOURCE_FILES})
 target_compile_options(core
   PRIVATE

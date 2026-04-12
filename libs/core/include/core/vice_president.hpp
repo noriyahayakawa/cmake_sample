@@ -6,6 +6,7 @@
 #pragma once
 
 #include "core/general_affairs_officer.hpp"
+#include "core_export.hpp"
 
 namespace core {
 

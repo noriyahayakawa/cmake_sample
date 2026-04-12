@@ -5,6 +5,7 @@
  * @brief 非同期 TCP クライアントクラスを宣言する。
  */
 
+#include "comm_export.hpp"
 #include "comm/session.hpp"
 #include <boost/asio.hpp>
 
@@ -19,7 +20,7 @@ using boost::asio::ip::tcp;
  * Boost.Asio を利用した非同期 TCP 接続クライアント。
  * 現在の実装は空で、将来の拡張ポイントとして定義されている。
  */
-class async_tcp_client : public session {
+class COMM_EXPORT async_tcp_client : public session {
 public:
   /**
    * @brief コンストラクタ。

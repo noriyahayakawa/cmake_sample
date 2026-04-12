@@ -9,7 +9,7 @@
       "binaryDir": "out/build/${presetName}",
       "installDir": "out/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_CXX_STANDARD": "23",
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_FEATURE_FLAGS": "manifests",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",

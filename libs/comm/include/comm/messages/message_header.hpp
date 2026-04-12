@@ -5,6 +5,7 @@
  * @brief TCP メッセージのヘッダーファイルを宣言する。
  */
 
+#include "comm_export.hpp"
 #include <array>
 #include <cstdint>
 #include <string>
@@ -17,7 +18,7 @@ namespace comm::messages {
  * メッセージ型を表す文字列、ペイロード長、および固定サイズのペイロードバッファを管理する。
  * ペイロードの最大サイズは `max_payload_size_` で定義される。
  */
-class message_header {
+class COMM_EXPORT message_header {
   static constexpr std::size_t max_data_size_ =
       32; ///< データの最大サイズ（バイト単位）。
   static constexpr std::size_t length_offset_ = 0; ///< data_ 内の message_length_ の開始オフセット。

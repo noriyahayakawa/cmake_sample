@@ -10,10 +10,6 @@
 #include <boost/json.hpp>
 #include <gtest/gtest.h>
 
-// ─────────────────────────────────────────────
-// commons
-// ─────────────────────────────────────────────
-
 /**
  * @brief JSON オブジェクトから `commons`
  * の各フィールドが読み取れることを確認する。
@@ -61,20 +57,16 @@ TEST(commons_test, commons_to_json_omits_empty_fields) {
   EXPECT_EQ(jv.as_object().size(), 0u);
 }
 
-// ─────────────────────────────────────────────
-// server_settings
-// ─────────────────────────────────────────────
-
 /**
  * @brief JSON オブジェクトから `server_settings`
  * の各フィールドが読み取れることを確認する。
  */
 TEST(server_settings_test, json_to_server_settings_reads_fields) {
   const auto jv = boost::json::parse(
-      R"({"enable":true,"name":"main-server","service":"8080"})");
+      R"({"enable":true,"id":"main-server","service":"8080"})");
   const auto s = boost::json::value_to<core::settings::server_settings>(jv);
   EXPECT_TRUE(s.enable);
-  EXPECT_EQ(s.name, "main-server");
+  EXPECT_EQ(s.id, "main-server");
   EXPECT_EQ(s.service, "8080");
 }
 
@@ -86,7 +78,7 @@ TEST(server_settings_test, json_to_server_settings_missing_keys_default) {
   const auto jv = boost::json::parse("{}");
   const auto s = boost::json::value_to<core::settings::server_settings>(jv);
   EXPECT_FALSE(s.enable);
-  EXPECT_EQ(s.name, "");
+  EXPECT_EQ(s.id, "");
   EXPECT_EQ(s.service, "");
 }
 
@@ -97,18 +89,14 @@ TEST(server_settings_test, json_to_server_settings_missing_keys_default) {
 TEST(server_settings_test, server_settings_to_json_roundtrip) {
   core::settings::server_settings src;
   src.enable = true;
-  src.name = "sv";
+  src.id = "sv";
   src.service = "9000";
   const auto jv = boost::json::value_from(src);
   const auto dst = boost::json::value_to<core::settings::server_settings>(jv);
   EXPECT_EQ(dst.enable, src.enable);
-  EXPECT_EQ(dst.name, src.name);
+  EXPECT_EQ(dst.id, src.id);
   EXPECT_EQ(dst.service, src.service);
 }
-
-// ─────────────────────────────────────────────
-// client_settings
-// ─────────────────────────────────────────────
 
 /**
  * @brief JSON オブジェクトから `client_settings`
@@ -116,10 +104,10 @@ TEST(server_settings_test, server_settings_to_json_roundtrip) {
  */
 TEST(client_settings_test, json_to_client_settings_reads_fields) {
   const auto jv = boost::json::parse(
-      R"({"enable":true,"name":"c1","host":"127.0.0.1","service":"1234"})");
+      R"({"enable":true,"id":"c1","host":"127.0.0.1","service":"1234"})");
   const auto c = boost::json::value_to<core::settings::client_settings>(jv);
   EXPECT_TRUE(c.enable);
-  EXPECT_EQ(c.name, "c1");
+  EXPECT_EQ(c.id, "c1");
   EXPECT_EQ(c.host, "127.0.0.1");
   EXPECT_EQ(c.service, "1234");
 }
@@ -132,9 +120,9 @@ TEST(client_settings_test, json_to_client_settings_missing_keys_default) {
   const auto jv = boost::json::parse("{}");
   const auto c = boost::json::value_to<core::settings::client_settings>(jv);
   EXPECT_FALSE(c.enable);
-  EXPECT_EQ(c.name, "");
-  EXPECT_EQ(c.host, std::nullopt);
-  EXPECT_EQ(c.service, std::nullopt);
+  EXPECT_EQ(c.id, "");
+  EXPECT_EQ(c.host, "");
+  EXPECT_EQ(c.service, "");
 }
 
 /**
@@ -144,20 +132,16 @@ TEST(client_settings_test, json_to_client_settings_missing_keys_default) {
 TEST(client_settings_test, client_settings_to_json_roundtrip) {
   core::settings::client_settings src;
   src.enable = true;
-  src.name = "cli";
+  src.id = "cli";
   src.host = "192.168.0.1";
   src.service = "5000";
   const auto jv = boost::json::value_from(src);
   const auto dst = boost::json::value_to<core::settings::client_settings>(jv);
   EXPECT_EQ(dst.enable, src.enable);
-  EXPECT_EQ(dst.name, src.name);
+  EXPECT_EQ(dst.id, src.id);
   EXPECT_EQ(dst.host, src.host);
   EXPECT_EQ(dst.service, src.service);
 }
-
-// ─────────────────────────────────────────────
-// communications
-// ─────────────────────────────────────────────
 
 /**
  * @brief JSON オブジェクトから `communications`
@@ -165,17 +149,17 @@ TEST(client_settings_test, client_settings_to_json_roundtrip) {
  */
 TEST(communications_test, json_to_communications_reads_server_and_clients) {
   const auto jv = boost::json::parse(R"({
-    "server": {"enable":true,"name":"sv","service":"8080"},
+    "server": {"enable":true,"id":"sv","service":"8080"},
     "clients": [
-      {"enable":true,"name":"c1","host":"localhost","service":"9000"}
+      {"enable":true,"id":"c1","host":"localhost","service":"9000"}
     ]
   })");
   const auto comm = boost::json::value_to<core::settings::communications>(jv);
   EXPECT_TRUE(comm.server.enable);
-  EXPECT_EQ(comm.server.name, "sv");
+  EXPECT_EQ(comm.server.id, "sv");
   ASSERT_EQ(comm.clients.size(), 1u);
   EXPECT_TRUE(comm.clients[0].enable);
-  EXPECT_EQ(comm.clients[0].name, "c1");
+  EXPECT_EQ(comm.clients[0].id, "c1");
   EXPECT_EQ(comm.clients[0].host, "localhost");
 }
 
@@ -197,24 +181,20 @@ TEST(communications_test, json_to_communications_missing_keys_default) {
 TEST(communications_test, communications_to_json_roundtrip) {
   core::settings::communications src;
   src.server.enable = true;
-  src.server.name = "srv";
+  src.server.id = "srv";
   src.server.service = "7777";
   core::settings::client_settings cl;
   cl.enable = false;
-  cl.name = "cli";
+  cl.id = "cli";
   cl.host = "10.0.0.1";
   cl.service = "3000";
   src.clients.push_back(cl);
   const auto jv = boost::json::value_from(src);
   const auto dst = boost::json::value_to<core::settings::communications>(jv);
-  EXPECT_EQ(dst.server.name, src.server.name);
+  EXPECT_EQ(dst.server.id, src.server.id);
   ASSERT_EQ(dst.clients.size(), 1u);
   EXPECT_EQ(dst.clients[0].host, src.clients[0].host);
 }
-
-// ─────────────────────────────────────────────
-// input_file
-// ─────────────────────────────────────────────
 
 /**
  * @brief JSON から `input_file` の `commons`

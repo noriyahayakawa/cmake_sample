@@ -5,6 +5,7 @@
  * @brief TCP メッセージの基底クラスを宣言する。
  */
 
+#include "comm_export.hpp"
 #include <string>
 
 namespace comm::messages {
@@ -15,7 +16,7 @@ namespace comm::messages {
  * すべてのメッセージ型はこの構造体を継承して定義する。
  * `message_factory` による生成・管理のために仮想デストラクタを持つ。
  */
-struct message {
+struct COMM_EXPORT message {
   /** @brief デフォルトコンストラクタ。 */
   message() = default;
 

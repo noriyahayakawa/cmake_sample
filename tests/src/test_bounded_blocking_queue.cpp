@@ -9,6 +9,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread.hpp>
 #include <gtest/gtest.h>
+#include <stop_token>
 #include <vector>
 
 using Queue = comm::utilities::bounded_blocking_queue<int>;
@@ -26,11 +27,14 @@ TEST(bounded_blocking_queue_test, initial_state_is_empty_and_not_closed) {
  * @brief push した値が pop で取り出せることを確認する。
  */
 TEST(bounded_blocking_queue_test, push_and_pop_preserve_value) {
+  std::stop_source stop_source;
+  std::stop_token token = stop_source.get_token();
   Queue q(4);
-  ASSERT_TRUE(q.push(42));
-  int out = 0;
-  ASSERT_TRUE(q.pop(out));
-  EXPECT_EQ(out, 42);
+  [[maybe_unused]] auto r1 = q.push(42, token);
+  ASSERT_TRUE(r1.has_value());
+  [[maybe_unused]] auto r2 = q.pop(token);
+  ASSERT_TRUE(r2.has_value());
+  EXPECT_EQ(*r2, 42);
 }
 
 /**
@@ -38,16 +42,15 @@ TEST(bounded_blocking_queue_test, push_and_pop_preserve_value) {
  */
 TEST(bounded_blocking_queue_test, fifo_order_is_maintained) {
   Queue q(4);
-  q.push(1);
-  q.push(2);
-  q.push(3);
-  int a = 0, b = 0, c = 0;
-  q.pop(a);
-  q.pop(b);
-  q.pop(c);
-  EXPECT_EQ(a, 1);
-  EXPECT_EQ(b, 2);
-  EXPECT_EQ(c, 3);
+  [[maybe_unused]] auto _r1 = q.push(1, std::stop_token{});
+  [[maybe_unused]] auto _r2 = q.push(2, std::stop_token{});
+  [[maybe_unused]] auto _r3 = q.push(3, std::stop_token{});
+  [[maybe_unused]] auto _a = q.pop(std::stop_token{});
+  [[maybe_unused]] auto _b = q.pop(std::stop_token{});
+  [[maybe_unused]] auto _c = q.pop(std::stop_token{});
+  EXPECT_EQ(*_a, 1);
+  EXPECT_EQ(*_b, 2);
+  EXPECT_EQ(*_c, 3);
 }
 
 /**
@@ -56,12 +59,11 @@ TEST(bounded_blocking_queue_test, fifo_order_is_maintained) {
 TEST(bounded_blocking_queue_test, size_reflects_push_and_pop) {
   Queue q(4);
   EXPECT_EQ(q.size(), 0u);
-  q.push(1);
+  [[maybe_unused]] auto _r2 = q.push(1, std::stop_token{});
   EXPECT_EQ(q.size(), 1u);
-  q.push(2);
+  [[maybe_unused]] auto _r3 = q.push(2, std::stop_token{});
   EXPECT_EQ(q.size(), 2u);
-  int v;
-  q.pop(v);
+  [[maybe_unused]] auto _v = q.pop(std::stop_token{});
   EXPECT_EQ(q.size(), 1u);
 }
 
@@ -81,7 +83,8 @@ TEST(bounded_blocking_queue_test, closed_returns_true_after_close) {
 TEST(bounded_blocking_queue_test, push_returns_false_after_close) {
   Queue q(4);
   q.close();
-  EXPECT_FALSE(q.push(1));
+  auto r = q.push(1, std::stop_token{});
+  EXPECT_FALSE(r.has_value());
 }
 
 /**
@@ -90,8 +93,8 @@ TEST(bounded_blocking_queue_test, push_returns_false_after_close) {
 TEST(bounded_blocking_queue_test, pop_returns_false_when_closed_and_empty) {
   Queue q(4);
   q.close();
-  int v = 0;
-  EXPECT_FALSE(q.pop(v));
+  auto r = q.pop(std::stop_token{});
+  EXPECT_FALSE(r.has_value());
 }
 
 /**
@@ -100,15 +103,17 @@ TEST(bounded_blocking_queue_test, pop_returns_false_when_closed_and_empty) {
 TEST(bounded_blocking_queue_test,
      pop_drains_items_then_returns_false_after_close) {
   Queue q(3);
-  q.push(10);
-  q.push(20);
+  [[maybe_unused]] auto _r1 = q.push(10, std::stop_token{});
+  [[maybe_unused]] auto _r2 = q.push(20, std::stop_token{});
   q.close();
-  int v = 0;
-  EXPECT_TRUE(q.pop(v));
-  EXPECT_EQ(v, 10);
-  EXPECT_TRUE(q.pop(v));
-  EXPECT_EQ(v, 20);
-  EXPECT_FALSE(q.pop(v));
+  [[maybe_unused]] auto r1 = q.pop(std::stop_token{});
+  EXPECT_TRUE(r1.has_value());
+  EXPECT_EQ(*r1, 10);
+  [[maybe_unused]] auto r2 = q.pop(std::stop_token{});
+  EXPECT_TRUE(r2.has_value());
+  EXPECT_EQ(*r2, 20);
+  [[maybe_unused]] auto r3 = q.pop(std::stop_token{});
+  EXPECT_FALSE(r3.has_value());
 }
 
 /**
@@ -116,8 +121,9 @@ TEST(bounded_blocking_queue_test,
  */
 TEST(bounded_blocking_queue_test, push_for_succeeds_when_space_available) {
   Queue q(4);
-  const bool result = q.push_for(7, boost::posix_time::milliseconds(100));
-  EXPECT_TRUE(result);
+  [[maybe_unused]] auto result =
+      q.push_for(7, std::chrono::milliseconds(100), std::stop_token{});
+  EXPECT_TRUE(result.has_value());
   EXPECT_EQ(q.size(), 1u);
 }
 
@@ -127,10 +133,11 @@ TEST(bounded_blocking_queue_test, push_for_succeeds_when_space_available) {
  */
 TEST(bounded_blocking_queue_test, push_for_returns_false_on_timeout_when_full) {
   Queue q(1);
-  q.push(0);
+  [[maybe_unused]] auto _result = q.push(0, std::stop_token{});
   int dummy = 99;
-  const bool result = q.push_for(dummy, boost::posix_time::milliseconds(50));
-  EXPECT_FALSE(result);
+  [[maybe_unused]] auto result =
+      q.push_for(dummy, std::chrono::milliseconds(50), std::stop_token{});
+  EXPECT_FALSE(result.has_value());
 }
 
 /**
@@ -138,11 +145,11 @@ TEST(bounded_blocking_queue_test, push_for_returns_false_on_timeout_when_full) {
  */
 TEST(bounded_blocking_queue_test, pop_for_succeeds_when_item_available) {
   Queue q(4);
-  q.push(7);
-  int out = 0;
-  const bool result = q.pop_for(out, boost::posix_time::milliseconds(100));
-  EXPECT_TRUE(result);
-  EXPECT_EQ(out, 7);
+  [[maybe_unused]] auto _result = q.push(7, std::stop_token{});
+  [[maybe_unused]] auto result =
+      q.pop_for(std::chrono::milliseconds(100), std::stop_token{});
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(*result, 7);
 }
 
 /**
@@ -150,9 +157,9 @@ TEST(bounded_blocking_queue_test, pop_for_succeeds_when_item_available) {
  */
 TEST(bounded_blocking_queue_test, pop_for_returns_false_on_timeout_when_empty) {
   Queue q(4);
-  int out = 0;
-  const bool result = q.pop_for(out, boost::posix_time::milliseconds(50));
-  EXPECT_FALSE(result);
+  [[maybe_unused]] auto result =
+      q.pop_for(std::chrono::milliseconds(50), std::stop_token{});
+  EXPECT_FALSE(result.has_value());
 }
 
 /**
@@ -162,8 +169,8 @@ TEST(bounded_blocking_queue_test, close_unblocks_waiting_pop) {
   Queue q(4);
   std::atomic<bool> result{true};
   boost::thread t([&] {
-    int v;
-    result.store(q.pop(v));
+    [[maybe_unused]] auto r = q.pop(std::stop_token{});
+    result.store(r.has_value());
   });
   boost::this_thread::sleep(boost::posix_time::milliseconds(50));
   q.close();
@@ -177,9 +184,12 @@ TEST(bounded_blocking_queue_test, close_unblocks_waiting_pop) {
  */
 TEST(bounded_blocking_queue_test, close_unblocks_waiting_push) {
   Queue q(1);
-  q.push(0);
+  [[maybe_unused]] auto _r = q.push(0, std::stop_token{});
   std::atomic<bool> result{true};
-  boost::thread t([&] { result.store(q.push(99)); });
+  boost::thread t([&] {
+    [[maybe_unused]] auto r = q.push(99, std::stop_token{});
+    result.store(r.has_value());
+  });
   boost::this_thread::sleep(boost::posix_time::milliseconds(50));
   q.close();
   t.join();
@@ -198,15 +208,17 @@ TEST(bounded_blocking_queue_test, producer_consumer_multithreaded) {
 
   boost::thread producer([&] {
     for (int i = 0; i < N; ++i) {
-      q.push(i);
+      [[maybe_unused]] auto r = q.push(i, std::stop_token{});
     }
     q.close();
   });
 
   boost::thread consumer([&] {
-    int v;
-    while (q.pop(v)) {
-      received.push_back(v);
+    while (true) {
+      [[maybe_unused]] auto r = q.pop(std::stop_token{});
+      if (!r.has_value())
+        break;
+      received.push_back(*r);
     }
   });
 

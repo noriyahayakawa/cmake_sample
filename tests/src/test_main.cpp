@@ -131,9 +131,9 @@ TEST(options_test, read_json_with_communications_section) {
     ofs << R"({
       "commons": {"appName":"app","version":"1.0"},
       "communications": {
-        "server": {"enable":true,"name":"srv","service":"8080"},
+        "server": {"enable":true,"id":"srv","service":"8080"},
         "clients": [
-          {"enable":true,"name":"c1","address":"127.0.0.1","service":"9000"}
+          {"enable":true,"id":"c1","address":"127.0.0.1","service":"9000"}
         ]
       }
     })";
@@ -142,7 +142,7 @@ TEST(options_test, read_json_with_communications_section) {
   core::settings::options::instance().read_input_file(temp_path);
   const auto &f = core::settings::options::instance().input_file();
   EXPECT_TRUE(f.communications.server.enable);
-  EXPECT_EQ(f.communications.server.name, "srv");
+  EXPECT_EQ(f.communications.server.id, "srv");
   ASSERT_EQ(f.communications.clients.size(), 1u);
   EXPECT_EQ(f.communications.clients[0].host, "127.0.0.1");
 

@@ -5,7 +5,9 @@
  * @brief 非同期 TCP サーバクラスを宣言する。
  */
 
+#include "comm_export.hpp"
 #include <boost/asio.hpp>
+#include <boost/asio/awaitable.hpp>
 
 namespace comm {
 
@@ -18,7 +20,7 @@ using boost::asio::ip::tcp;
  * Boost.Asio を利用した非同期 TCP 接続の受け付けと通信を管理する。
  * 現在の実装は空で、将来の拡張ポイントとして定義されている。
  */
-class async_tcp_server {
+class COMM_EXPORT async_tcp_server {
   asio::cancellation_signal cancel_signal_; ///< accept ループのキャンセルシグナル。
 
 public:
@@ -38,7 +40,7 @@ public:
    * `co_spawn` の引数に指定することで、`cancel()` によるキャンセルが有効になる。
    * @return 非同期処理を表す awaitable オブジェクト。
    */
-  asio::awaitable<void> start_accepting(const std::string &service);
+  boost::asio::awaitable<void> start_accepting(const std::string &service);
 
   /**
    * @brief accept ループをキャンセルする。

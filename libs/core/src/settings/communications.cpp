@@ -31,7 +31,7 @@ namespace boost::json {
  * @return 変換後の `server_settings` 構造体。
  * @details
  * - `jv` を JSON オブジェクトとして解釈する。
- * - `enable`、`name`、`service` をキー存在確認付きで読み取る。
+ * - `enable`、`id`、`service` をキー存在確認付きで読み取る。
  * - キーが存在しない場合は既定値（`false` または空文字）を設定する。
  */
 ::core::settings::server_settings
@@ -40,12 +40,10 @@ tag_invoke(value_to_tag<::core::settings::server_settings>, const value &jv) {
   ::core::settings::server_settings result;
   result.enable =
       obj.if_contains("enable") ? value_to<bool>(obj.at("enable")) : false;
-  result.name =
-      obj.if_contains("name") ? value_to<std::string>(obj.at("name")) : "";
-  result.service =
-      obj.if_contains("service")
-          ? std::optional<std::string>(value_to<std::string>(obj.at("service")))
-          : std::nullopt;
+  result.id = obj.if_contains("id") ? value_to<std::string>(obj.at("id")) : "";
+  result.service = obj.if_contains("service")
+                       ? value_to<std::string>(obj.at("service"))
+                       : "";
   return result;
 }
 
@@ -55,13 +53,13 @@ tag_invoke(value_to_tag<::core::settings::server_settings>, const value &jv) {
  * @param server_settings 変換元のサーバ設定。
  * @details
  * - 出力先は JSON オブジェクトで上書きする。
- * - `enable`、`name`、`service` をすべて JSON オブジェクトへ出力する。
+ * - `enable`、`id`、`service` をすべて JSON オブジェクトへ出力する。
  */
 void tag_invoke(value_from_tag, value &jv,
                 const ::core::settings::server_settings &server_settings) {
   object obj;
   obj["enable"] = value_from(server_settings.enable);
-  obj["name"] = value_from(server_settings.name);
+  obj["id"] = value_from(server_settings.id);
   obj["service"] = value_from(server_settings.service);
   jv = std::move(obj);
 }
@@ -72,7 +70,7 @@ void tag_invoke(value_from_tag, value &jv,
  * @return 変換後の `client_settings` 構造体。
  * @details
  * - `jv` を JSON オブジェクトとして解釈する。
- * - `enable`、`name`、`host`、`service` をキー存在確認付きで読み取る。
+ * - `enable`、`id`、`host`、`service` をキー存在確認付きで読み取る。
  * - キーが存在しない場合は既定値（`false` または空文字）を設定する。
  */
 ::core::settings::client_settings
@@ -81,16 +79,12 @@ tag_invoke(value_to_tag<::core::settings::client_settings>, const value &jv) {
   ::core::settings::client_settings result;
   result.enable =
       obj.if_contains("enable") ? value_to<bool>(obj.at("enable")) : false;
-  result.name =
-      obj.if_contains("name") ? value_to<std::string>(obj.at("name")) : "";
+  result.id = obj.if_contains("id") ? value_to<std::string>(obj.at("id")) : "";
   result.host =
-      obj.if_contains("host")
-          ? std::optional<std::string>(value_to<std::string>(obj.at("host")))
-          : std::nullopt;
-  result.service =
-      obj.if_contains("service")
-          ? std::optional<std::string>(value_to<std::string>(obj.at("service")))
-          : std::nullopt;
+      obj.if_contains("host") ? value_to<std::string>(obj.at("host")) : "";
+  result.service = obj.if_contains("service")
+                       ? value_to<std::string>(obj.at("service"))
+                       : "";
   return result;
 }
 
@@ -100,13 +94,13 @@ tag_invoke(value_to_tag<::core::settings::client_settings>, const value &jv) {
  * @param client_settings 変換元のクライアント設定。
  * @details
  * - 出力先は JSON オブジェクトで上書きする。
- * - `enable`、`name`、`host`、`service` をすべて JSON オブジェクトへ出力する。
+ * - `enable`、`id`、`host`、`service` をすべて JSON オブジェクトへ出力する。
  */
 void tag_invoke(value_from_tag, value &jv,
                 const ::core::settings::client_settings &client_settings) {
   object obj;
   obj["enable"] = value_from(client_settings.enable);
-  obj["name"] = value_from(client_settings.name);
+  obj["id"] = value_from(client_settings.id);
   obj["host"] = value_from(client_settings.host);
   obj["service"] = value_from(client_settings.service);
   jv = std::move(obj);

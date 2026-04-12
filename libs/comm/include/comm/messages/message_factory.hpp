@@ -5,7 +5,8 @@
  * @brief TCP メッセージのファクトリークラスを宣言する。
  */
 
-#include "comm/messages/message.hpp"
+#include "comm_export.hpp"
+ #include "comm/messages/message.hpp"
 #include <boost/core/noncopyable.hpp>
 #include <boost/serialization/singleton.hpp>
 #include <boost/function.hpp>
@@ -23,7 +24,7 @@ namespace comm::messages {
  *
  * @note コピー不可。インスタンスは `instance()` を通じて取得する。
  */
-class message_factory : private boost::noncopyable {
+class COMM_EXPORT message_factory : private boost::noncopyable {
   friend class boost::serialization::singleton<message_factory>;
   friend class boost::serialization::detail::singleton_wrapper<message_factory>;
 
