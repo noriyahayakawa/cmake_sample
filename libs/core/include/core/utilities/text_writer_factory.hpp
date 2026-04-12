@@ -61,7 +61,16 @@ private:
 
 public:
   /** @brief デストラクタ。 */
-  ~text_writer_factory() = default;
+  virtual ~text_writer_factory() {
+    // すべてのストリームを閉じる
+    for (auto it = writers_.begin(); it != writers_.end();) {
+      if (it->second && it->second.is_open()) {
+        it->second.flush();
+        it->second.close();
+      }
+      it = writers_.erase(it);
+    }
+  }
 
   /**
    * @brief シングルトンインスタンスへの参照を返す。

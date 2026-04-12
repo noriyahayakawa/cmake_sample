@@ -29,7 +29,7 @@ text_writer_factory::create_writer(const std::string &name) {
   auto [it, inserted] = writers_.emplace(
       name, fs::ofstream(file_path.string(),
                          std::ios::app | std::ios::out | std::ios::binary));
-  if (!it->second.is_open()) {
+  if (!it->second || !it->second.is_open()) {
     writers_.erase(it);
     BOOST_THROW_EXCEPTION(
         core::exceptions::my_error{}
@@ -38,7 +38,6 @@ text_writer_factory::create_writer(const std::string &name) {
   }
 #ifdef _WIN32
   if (created) {
-    // BOM付きUTF-8 (EF BB BF) を先頭に書き込む
     static constexpr unsigned char kUtf8Bom[] = {0xEF, 0xBB, 0xBF};
     it->second.write(reinterpret_cast<const char *>(kUtf8Bom),
                      sizeof(kUtf8Bom));
