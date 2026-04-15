@@ -14,7 +14,7 @@ namespace core::exceptions {
  * 付加情報がない場合は既定値 `"show_help"` を返す。
  * @return 例外メッセージ文字列へのポインタ。
  */
-const char *show_help::what() const noexcept {
+auto show_help::what() const noexcept -> const char * {
   if (const std::string *msg = boost::get_error_info<errinfo_message>(*this)) {
     return msg->c_str();
   }

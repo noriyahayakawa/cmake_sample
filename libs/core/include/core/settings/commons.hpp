@@ -25,7 +25,7 @@ namespace core::settings {
  */
 struct CORE_EXPORT commons : public i_input_data {
   /** @brief 仮想デストラクタ。 */
-  virtual ~commons() override = default;
+  ~commons() override = default;
 
   /** @brief アプリケーション名。 */
   std::string app_name;
@@ -34,8 +34,7 @@ struct CORE_EXPORT commons : public i_input_data {
   /** @brief 出力先ディレクトリパス。省略時は `./output`。 */
   fs::path output_dir;
 
-  virtual void
-  resolve_relative_path(const boost::filesystem::path &path) override;
+  void resolve_relative_path(const boost::filesystem::path &path) override;
 };
 
 } // namespace core::settings
@@ -50,8 +49,9 @@ namespace boost::json {
  * `jv` は JSON オブジェクトであることを想定し、`appName` と `version` を
  * 読み取る。キーが存在しない場合は対応するメンバへ空文字を設定する。
  */
-CORE_EXPORT ::core::settings::commons
-tag_invoke(value_to_tag<::core::settings::commons>, const value &jv);
+CORE_EXPORT auto tag_invoke(value_to_tag<::core::settings::commons>,
+                            const value &json_value)
+    -> ::core::settings::commons;
 
 /**
  * @brief `core::settings::commons` を JSON 値に変換する。
@@ -59,7 +59,7 @@ tag_invoke(value_to_tag<::core::settings::commons>, const value &jv);
  * @param commons 変換元の `commons` 構造体。
  * @details 空文字の項目は JSON 出力に含めない。
  */
-CORE_EXPORT void tag_invoke(value_from_tag, value &jv,
+CORE_EXPORT void tag_invoke(value_from_tag, value &json_value,
                             const ::core::settings::commons &commons);
 
 } // namespace boost::json

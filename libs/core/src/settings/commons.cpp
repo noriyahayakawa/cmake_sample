@@ -19,27 +19,27 @@ namespace boost::json {
 
 /**
  * @brief JSON 値から `core::settings::commons` を生成する。
- * @param jv 変換元 JSON 値。
+ * @param json_value 変換元 JSON 値。
  * @return 変換後の `commons` 構造体。
  * @details
- * - `jv` を JSON オブジェクトとして解釈する。
+ * - `json_value` を JSON オブジェクトとして解釈する。
  * - `appName` と `version` をキー存在確認付きで読み取る。
  * - キーが存在しない場合は対応するメンバへ空文字を設定する。
  * - `output_dir` をキー存在確認付きで読み取る。
  * - キーが存在しない場合はデフォルトで `./output` を設定する。
  */
-::core::settings::commons
-tag_invoke(boost::json::value_to_tag<::core::settings::commons>,
-           const value &jv) {
-  const object &obj = jv.as_object();
+auto tag_invoke(
+    [[maybe_unused]] boost::json::value_to_tag<::core::settings::commons> tag,
+    const value &json_value) -> ::core::settings::commons {
+  const object &obj = json_value.as_object();
   ::core::settings::commons result;
-  result.app_name = obj.if_contains("appName")
+  result.app_name = (obj.if_contains("appName") != nullptr)
                         ? value_to<std::string>(obj.at("appName"))
                         : "";
-  result.version = obj.if_contains("version")
+  result.version = (obj.if_contains("version") != nullptr)
                        ? value_to<std::string>(obj.at("version"))
                        : "";
-  result.output_dir = obj.if_contains("output_dir")
+  result.output_dir = (obj.if_contains("output_dir") != nullptr)
                           ? value_to<fs::path>(obj.at("output_dir"))
                           : fs::path("./output");
   return result;
@@ -53,7 +53,7 @@ tag_invoke(boost::json::value_to_tag<::core::settings::commons>,
  * - 出力先は JSON オブジェクトで上書きする。
  * - 空文字でない項目のみ JSON オブジェクトへ出力する。
  */
-void tag_invoke(value_from_tag, value &jv,
+void tag_invoke([[maybe_unused]] value_from_tag tag, value &json_value,
                 const ::core::settings::commons &commons) {
   object obj;
   if (!commons.app_name.empty()) {
@@ -63,7 +63,7 @@ void tag_invoke(value_from_tag, value &jv,
     obj["version"] = value_from(commons.version);
   }
   obj["output_dir"] = value_from(commons.output_dir);
-  jv = std::move(obj);
+  json_value = std::move(obj);
 }
 
 } // namespace boost::json

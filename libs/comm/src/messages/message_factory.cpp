@@ -1,6 +1,7 @@
 #include "comm/messages/message_factory.hpp"
 
 #include <stdexcept>
+#include <utility>
 
 /**
  * @file message_factory.cpp
@@ -15,12 +16,13 @@ namespace comm::messages {
  * @return 生成した `message` 派生オブジェクトの shared_ptr。
  * @throws std::runtime_error 未登録の型を指定した場合。
  */
-std::shared_ptr<message> message_factory::create_message(const std::string &type) {
-    auto it = creators_.find(type);
-    if (it != creators_.end()) {
-        return it->second();
-    }
-    boost::throw_exception(std::runtime_error("Unknown message type: " + type));
+auto message_factory::create_message(const std::string &type)
+    -> std::shared_ptr<message> {
+  auto creator_it = creators_.find(type);
+  if (creator_it != creators_.end()) {
+    return creator_it->second();
+  }
+  boost::throw_exception(std::runtime_error("Unknown message type: " + type));
 }
 
 /**
@@ -30,7 +32,7 @@ std::shared_ptr<message> message_factory::create_message(const std::string &type
  */
 void message_factory::register_message(const std::string &type,
     boost::function<std::shared_ptr<message>()> creator) {
-    creators_[type] = creator;
+  creators_[type] = std::move(creator);
 }
 
 } // namespace comm::messages

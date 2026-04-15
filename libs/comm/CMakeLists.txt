@@ -6,8 +6,14 @@ if(POLICY CMP0167)
 endif()
 
 project(sample_comm LANGUAGES CXX)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# set(CMAKE_CXX_CLANG_TIDY
+#   clang-tidy;
+#   --extra-arg=/EHsc;
+#   --extra-arg-before=--driver-mode=cl
+# )
 include(GNUInstallDirs)
 
 file(GLOB_RECURSE COMM_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp)

@@ -9,6 +9,14 @@
 
 namespace core {
 
+namespace {
+
+constexpr auto kBoostMajorDivisor = 100000;
+constexpr auto kBoostMinorDivisor = 100;
+constexpr auto kBoostMinorModulo = 1000;
+
+} // namespace
+
 /**
  * @brief 記録係の挨拶処理。
  * @details
@@ -17,9 +25,10 @@ namespace core {
 void historian::hello() const {
   BOOST_LOG_TRIVIAL(debug) << "Boost version (string): " << BOOST_LIB_VERSION;
   BOOST_LOG_TRIVIAL(debug) << "Boost version (numeric): "
-                           << BOOST_VERSION / 100000 << "."
-                           << BOOST_VERSION / 100 % 1000 << "."
-                           << BOOST_VERSION % 100;
+                           << BOOST_VERSION / kBoostMajorDivisor << "."
+                           << BOOST_VERSION / kBoostMinorDivisor %
+                                  kBoostMinorModulo
+                           << "." << BOOST_VERSION % kBoostMinorDivisor;
 }
 
 } // namespace core

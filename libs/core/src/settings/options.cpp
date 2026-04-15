@@ -7,6 +7,7 @@
 
 #include "exceptions/my_error.hpp"
 #include "exceptions/show_help.hpp"
+#include <array>
 #include <boost/log/trivial.hpp>
 #include <boost/system/system_error.hpp>
 #include <boost/version.hpp>
@@ -22,14 +23,17 @@ namespace json = boost::json;
 
 namespace {
 
+constexpr std::array<unsigned char, 3> kUtf8Bom = {0xEFU, 0xBBU, 0xBFU};
+
 /**
  * @brief 英字を小文字へ正規化した文字列を返す。
  * @param text 変換対象文字列。
  * @return 小文字化した文字列。
  */
-std::string to_lower_copy(std::string text) {
-  for (char &ch : text) {
-    ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+auto to_lower_copy(std::string text) -> std::string {
+  for (char &character : text) {
+    character =
+        static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
   }
   return text;
 }
@@ -40,7 +44,7 @@ std::string to_lower_copy(std::string text) {
  * @retval true 拡張子が `.jsonc` である。
  * @retval false それ以外。
  */
-bool is_jsonc_path(const fs::path &path) {
+auto is_jsonc_path(const fs::path &path) -> bool {
   return to_lower_copy(path.extension().string()) == ".jsonc";
 }
 
@@ -72,18 +76,19 @@ void options::read_input_file(const fs::path &path) {
     std::string input_text((std::istreambuf_iterator<char>(ifs)),
                            std::istreambuf_iterator<char>());
 
-    if (input_text.size() >= 3 &&
-        static_cast<unsigned char>(input_text[0]) == 0xEF &&
-        static_cast<unsigned char>(input_text[1]) == 0xBB &&
-        static_cast<unsigned char>(input_text[2]) == 0xBF) {
-      input_text.erase(0, 3);
+    if (input_text.size() >= kUtf8Bom.size() &&
+        std::equal(kUtf8Bom.begin(), kUtf8Bom.end(), input_text.begin(),
+                   [](unsigned char bom_byte, char input_char) -> bool {
+                     return bom_byte == static_cast<unsigned char>(input_char);
+                   })) {
+      input_text.erase(0, kUtf8Bom.size());
     }
 
     json::parse_options opt;
     opt.allow_comments = is_jsonc_path(input_file_path_);
     opt.allow_trailing_commas = true;
-    json::value jv = json::parse(input_text, {}, opt);
-    input_file_ = json::value_to<settings::input_file>(jv);
+    json::value json_value = json::parse(input_text, {}, opt);
+    input_file_ = json::value_to<settings::input_file>(json_value);
     input_file_.resolve_relative_path(input_file_path_.parent_path());
 
     BOOST_LOG_TRIVIAL(debug)

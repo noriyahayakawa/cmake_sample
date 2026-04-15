@@ -21,16 +21,15 @@ namespace core::settings {
  * 相互変換が可能。
  */
 struct CORE_EXPORT input_file : public i_input_data {
-  /** @brief 仮想デストラクタ。 */
-  virtual ~input_file() override = default;
+  /** @brief デストラクタ。 */
+  ~input_file() override = default;
 
   /** @brief アプリケーション共通設定。 */
   commons commons;
   /** @brief 通信設定。 */
   communications communications;
 
-  virtual void
-  resolve_relative_path(const boost::filesystem::path &path) override;
+  void resolve_relative_path(const boost::filesystem::path &path) override;
 };
 
 } // namespace core::settings
@@ -47,8 +46,9 @@ namespace boost::json {
  * 同様に、`communications` キーを `core::settings::communications` として
  * 読み取る。`communications` キーが存在しない場合は既定構築した値を設定する。
  */
-CORE_EXPORT ::core::settings::input_file
-tag_invoke(value_to_tag<::core::settings::input_file>, const value &jv);
+CORE_EXPORT auto tag_invoke(value_to_tag<::core::settings::input_file>,
+                            const value &json_value)
+    -> ::core::settings::input_file;
 
 /**
  * @brief `core::settings::input_file` を JSON 値に変換する。
@@ -57,7 +57,7 @@ tag_invoke(value_to_tag<::core::settings::input_file>, const value &jv);
  * @details `commons` メンバを `commons` キーとして JSON
  * オブジェクトへ格納する。
  */
-CORE_EXPORT void tag_invoke(value_from_tag, value &jv,
+CORE_EXPORT void tag_invoke(value_from_tag, value &json_value,
                             const ::core::settings::input_file &input_file);
 
 } // namespace boost::json

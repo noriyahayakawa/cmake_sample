@@ -24,7 +24,7 @@ namespace core::settings {
  */
 struct CORE_EXPORT server_settings : public i_input_data {
   /** @brief 仮想デストラクタ。 */
-  virtual ~server_settings() override = default;
+  ~server_settings() override = default;
 
   /** @brief サーバを有効にするかどうか。 */
   bool enable = false;
@@ -33,8 +33,7 @@ struct CORE_EXPORT server_settings : public i_input_data {
   /** @brief サーバのサービス名またはポート番号文字列。 */
   std::string service;
 
-  virtual void
-  resolve_relative_path(const boost::filesystem::path &path) override;
+  void resolve_relative_path(const boost::filesystem::path &path) override;
 };
 
 /**
@@ -45,8 +44,8 @@ struct CORE_EXPORT server_settings : public i_input_data {
  * 相互変換ができる。
  */
 struct CORE_EXPORT client_settings : public i_input_data {
-  /** @brief 仮想デストラクタ。 */
-  virtual ~client_settings() override = default;
+  /** @brief デストラクタ。 */
+  ~client_settings() override = default;
 
   /** @brief クライアントを有効にするかどうか。 */
   bool enable = false;
@@ -57,8 +56,7 @@ struct CORE_EXPORT client_settings : public i_input_data {
   /** @brief 接続先サービス名またはポート番号文字列。 */
   std::string service;
 
-  virtual void
-  resolve_relative_path(const boost::filesystem::path &path) override;
+  void resolve_relative_path(const boost::filesystem::path &path) override;
 };
 
 /**
@@ -70,16 +68,15 @@ struct CORE_EXPORT client_settings : public i_input_data {
  * 相互変換ができる。
  */
 struct CORE_EXPORT communications : public i_input_data {
-  /** @brief 仮想デストラクタ。 */
-  virtual ~communications() override = default;
+  /** @brief デストラクタ。 */
+  ~communications() override = default;
 
   /** @brief サーバ接続設定。 */
   server_settings server;
   /** @brief クライアント接続設定の一覧。 */
   std::vector<client_settings> clients;
 
-  virtual void
-  resolve_relative_path(const boost::filesystem::path &path) override;
+  void resolve_relative_path(const boost::filesystem::path &path) override;
 };
 
 } // namespace core::settings
@@ -88,64 +85,67 @@ namespace boost::json {
 
 /**
  * @brief JSON 値を `core::settings::server_settings` に変換する。
- * @param jv 変換元の JSON 値。
+ * @param json_value 変換元の JSON 値。
  * @return 変換結果の `server_settings` 構造体。
  * @details 各キーが存在しない場合はメンバの既定値（`false`
  * または空文字）を設定する。
  */
-CORE_EXPORT ::core::settings::server_settings
-tag_invoke(value_to_tag<::core::settings::server_settings>, const value &jv);
+CORE_EXPORT auto tag_invoke(value_to_tag<::core::settings::server_settings>,
+                            const value &json_value)
+    -> ::core::settings::server_settings;
 
 /**
  * @brief `core::settings::server_settings` を JSON 値に変換する。
- * @param jv 変換先の JSON 値。JSON オブジェクトとして上書きされる。
+ * @param json_value 変換先の JSON 値。JSON オブジェクトとして上書きされる。
  * @param server_settings 変換元のサーバ設定。
  * @details `enable`、`name`、`service` をすべて JSON オブジェクトへ格納する。
  */
 CORE_EXPORT void
-tag_invoke(value_from_tag, value &jv,
+tag_invoke(value_from_tag, value &json_value,
            const ::core::settings::server_settings &server_settings);
 
 /**
  * @brief JSON 値を `core::settings::client_settings` に変換する。
- * @param jv 変換元の JSON 値。
+ * @param json_value 変換元の JSON 値。
  * @return 変換結果の `client_settings` 構造体。
  * @details 各キーが存在しない場合はメンバの既定値（`false`
  * または空文字）を設定する。
  */
-CORE_EXPORT ::core::settings::client_settings
-tag_invoke(value_to_tag<::core::settings::client_settings>, const value &jv);
+CORE_EXPORT auto tag_invoke(value_to_tag<::core::settings::client_settings>,
+                            const value &json_value)
+    -> ::core::settings::client_settings;
 
 /**
  * @brief `core::settings::client_settings` を JSON 値に変換する。
- * @param jv 変換先の JSON 値。JSON オブジェクトとして上書きされる。
+ * @param json_value 変換先の JSON 値。JSON オブジェクトとして上書きされる。
  * @param client_settings 変換元のクライアント設定。
  * @details `enable`、`name`、`host`、`service` をすべて JSON
  * オブジェクトへ格納する。
  */
 CORE_EXPORT void
-tag_invoke(value_from_tag, value &jv,
+tag_invoke(value_from_tag, value &json_value,
            const ::core::settings::client_settings &client_settings);
 
 /**
  * @brief JSON 値を `core::settings::communications` に変換する。
- * @param jv 変換元の JSON 値。
+ * @param json_value 変換元の JSON 値。
  * @return 変換結果の `communications` 構造体。
  * @details
  * `server` キーが存在しない場合は既定構築した `server_settings` を設定する。
  * `clients` キーが存在しない場合は空の配列を設定する。
  */
-CORE_EXPORT ::core::settings::communications
-tag_invoke(value_to_tag<::core::settings::communications>, const value &jv);
+CORE_EXPORT auto tag_invoke(value_to_tag<::core::settings::communications>,
+                            const value &json_value)
+    -> ::core::settings::communications;
 
 /**
  * @brief `core::settings::communications` を JSON 値に変換する。
- * @param jv 変換先の JSON 値。JSON オブジェクトとして上書きされる。
+ * @param json_value 変換先の JSON 値。JSON オブジェクトとして上書きされる。
  * @param communications 変換元の通信設定。
  * @details `server` と `clients` を JSON オブジェクトへ格納する。
  */
 CORE_EXPORT void
-tag_invoke(value_from_tag, value &jv,
+tag_invoke(value_from_tag, value &json_value,
            const ::core::settings::communications &communications);
 
 } // namespace boost::json

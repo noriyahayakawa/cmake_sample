@@ -3,8 +3,8 @@
  * @brief student_council の実装を定義する。
  */
 
-#include "student_council.hpp"
-#include "settings/options.hpp"
+#include "core/student_council.hpp"
+#include "core/settings/options.hpp"
 
 namespace core {
 
@@ -27,8 +27,6 @@ void student_council::hello() const {
 void student_council::run() {
   auto executor_ = asio::this_coro::executor;
   const auto &options = settings::options::instance();
-
-  return;
 }
 
 } // namespace core

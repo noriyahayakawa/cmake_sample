@@ -3,7 +3,7 @@
  * @brief vice_president の実装を定義する。
  */
 
-#include "vice_president.hpp"
+#include "core/vice_president.hpp"
 
 namespace core {
 

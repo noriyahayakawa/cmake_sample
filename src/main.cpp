@@ -23,6 +23,9 @@ namespace po = boost::program_options;
 
 namespace {
 
+constexpr std::size_t kLogRotationSizeBytes =
+    static_cast<std::size_t>(256U) * 1024U * 1024U;
+
 /**
  * @brief Boost.Log の初期設定を行う。
  * @param executable_path 実行ファイルパス（`argv[0]`）。
@@ -33,7 +36,7 @@ namespace {
  * - グローバル属性として `ThreadID` を追加。
  * @throws boost::filesystem::filesystem_error ログディレクトリ作成失敗時。
  */
-static void init_logging(const char *executable_path) {
+void init_logging(const char *executable_path) {
   const fs::path exe_dir =
       fs::absolute(fs::path(executable_path)).parent_path();
   const fs::path log_dir = exe_dir / "logs";
@@ -57,7 +60,7 @@ static void init_logging(const char *executable_path) {
       keywords::target_file_name = rotated_file_pattern.string(),
       keywords::open_mode = std::ios_base::app,
       keywords::enable_final_rotation = false,
-      keywords::rotation_size = 256 * 1024 * 1024,
+      keywords::rotation_size = kLogRotationSizeBytes,
       keywords::time_based_rotation =
           sinks::file::rotation_at_time_point(0, 0, 0),
       keywords::auto_flush = true,
@@ -93,45 +96,52 @@ static void init_logging(const char *executable_path) {
  * - 通常ファイルでない場合は例外送出。
  * @note 絶対パスが存在しない場合は例外を送出せず、そのまま返す。
  */
-const fs::path parse_args(int argc, char *argv[]) {
-  fs::path exe_dir = fs::absolute(fs::path(argv[0])).parent_path();
+auto parse_args(int argc, std::span<const char *const> argv) -> fs::path {
   try {
+    fs::path exe_dir = fs::absolute(fs::path(argv[0])).parent_path();
+
     po::options_description desc("利用可能なオプション");
     desc.add_options()("input,i",
                        po::value<fs::path>()->default_value("app.jsonc"),
                        "入力ファイル")("help,h", "ヘルプを表示");
 
-    auto help_text = [&desc]() {
+    auto help_text = [&desc]() -> std::string {
       std::ostringstream oss;
       oss << desc;
       return oss.str();
     };
 
-    po::variables_map vm;
+    po::variables_map variables_map;
     po::positional_options_description pos;
     pos.add("input", 1);
-    po::store(
-        po::command_line_parser(argc, argv).options(desc).positional(pos).run(),
-        vm);
+    po::store(po::command_line_parser(argc, argv.data())
+                  .options(desc)
+                  .positional(pos)
+                  .run(),
+              variables_map);
 
-    if (vm.count("help")) {
+    // NOLINTBEGIN(readability-container-contains)
+    if (variables_map.find("help") != variables_map.end()) {
+      // boost::program_options::variables_map::contains はこの構成で
+      // 不安定なため find/end を使う。
       BOOST_THROW_EXCEPTION(core::exceptions::show_help{}
                             << core::exceptions::errinfo_message(help_text()));
     }
+    // NOLINTEND(readability-container-contains)
 
-    po::notify(vm);
-    fs::path input_file = vm["input"].as<fs::path>();
+    po::notify(variables_map);
+    fs::path input_file = variables_map["input"].as<fs::path>();
 
     boost::function<bool(const fs::path &)> is_regular_input_file =
-        [](const fs::path &p) -> bool {
-      if (fs::exists(p)) {
-        boost::system::error_code ec;
-        fs::file_status st = fs::status(p, ec);
-        if (ec) {
+        [](const fs::path &path) -> bool {
+      if (fs::exists(path)) {
+        boost::system::error_code error_code;
+        fs::file_status status = fs::status(path, error_code);
+        if (error_code) {
           BOOST_THROW_EXCEPTION(boost::system::system_error(
-              ec, "ファイル状態の取得に失敗しました。"));
+              error_code, "ファイル状態の取得に失敗しました。"));
         }
-        return fs::is_regular_file(st);
+        return fs::is_regular_file(status);
       }
       return false;
     };
@@ -175,20 +185,20 @@ const fs::path parse_args(int argc, char *argv[]) {
  * @retval INT_MAX-2 std例外発生
  * @retval INT_MAX-3 不明な例外発生
  */
-int main(int argc, char *argv[]) {
-
+// NOLINTBEGIN(bugprone-exception-escape)
+auto main(const int argc, const char *argv[]) -> int {
 #ifdef _WIN32
   struct ConsoleCodePageGuard {
     UINT old_output_cp;
     UINT old_input_cp;
 
-    ~ConsoleCodePageGuard() {
+    ~ConsoleCodePageGuard() noexcept {
       SetConsoleOutputCP(old_output_cp);
       SetConsoleCP(old_input_cp);
     }
   };
-  const ConsoleCodePageGuard code_page_guard{GetConsoleOutputCP(),
-                                             GetConsoleCP()};
+  const ConsoleCodePageGuard code_page_guard{
+      .old_output_cp = GetConsoleOutputCP(), .old_input_cp = GetConsoleCP()};
   SetConsoleOutputCP(CP_UTF8);
   SetConsoleCP(CP_UTF8);
 #endif
@@ -197,39 +207,41 @@ int main(int argc, char *argv[]) {
     ::init_logging(argv[0]);
     auto &student_council = core::student_council::instance();
     student_council.hello();
-    const auto input_file = ::parse_args(argc, argv);
+    const auto input_file =
+        ::parse_args(argc, std::span<const char *const>(argv, argc));
     auto &options = core::settings::options::instance();
     options.read_input_file(input_file);
-    student_council.run();
+    core::student_council::run();
   } catch (const core::exceptions::show_help &e) {
     if (const std::string *msg =
             boost::get_error_info<core::exceptions::errinfo_message>(e)) {
-      std::cout << *msg << std::endl;
+      std::cout << *msg << "\n";
     } else {
-      std::cout << "Usage: app [Options]" << std::endl;
-      std::cout << "Options:" << std::endl;
-      std::cout << "  -i [--input] arg    入力ファイル" << std::endl;
-      std::cout << "  -h [--help]         ヘルプを表示" << std::endl;
+      std::cout << "Usage: app [Options]" << "\n";
+      std::cout << "Options:\n";
+      std::cout << "  -i [--input] arg    入力ファイル\n";
+      std::cout << "  -h [--help]         ヘルプを表示\n";
     }
   } catch (const boost::exception &e) {
-    BOOST_LOG_TRIVIAL(debug) << boost::diagnostic_information(e) << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << boost::diagnostic_information(e) << "\n";
+    std::string fatal_message = "予期しない Boost 例外が発生しました。";
     if (const std::string *msg =
             boost::get_error_info<core::exceptions::errinfo_message>(e)) {
-      BOOST_LOG_TRIVIAL(fatal) << "予期しない Boost 例外が発生しました。\""
-                               << *msg << "\"" << std::endl;
-    } else {
-      BOOST_LOG_TRIVIAL(fatal)
-          << "予期しない Boost 例外が発生しました。" << std::endl;
+      fatal_message += "\"";
+      fatal_message += *msg;
+      fatal_message += "\"";
     }
+    BOOST_LOG_TRIVIAL(fatal) << fatal_message << "\n";
     return INT_MAX - 1;
   } catch (const std::exception &e) {
     BOOST_LOG_TRIVIAL(fatal)
-        << "予期しない例外が発生しました。\"" << e.what() << "\"" << std::endl;
+        << "予期しない例外が発生しました。\"" << e.what() << "\"\n";
     return INT_MAX - 2;
   } catch (...) {
-    BOOST_LOG_TRIVIAL(fatal) << "予期しない例外が発生しました。" << std::endl;
+    BOOST_LOG_TRIVIAL(fatal) << "予期しない例外が発生しました。\n";
     return INT_MAX - 3;
   }
 
   return 0;
 }
+// NOLINTEND(bugprone-exception-escape)

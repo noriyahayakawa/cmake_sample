@@ -16,25 +16,12 @@ namespace core::exceptions {
  * `"my_error"` を返す。
  * @return 例外メッセージ文字列へのポインタ。
  */
-const char *my_error::what() const noexcept {
-  try {
-    what_message_ = boost::diagnostic_information(*this);
-    if (!what_message_.empty()) {
-      return what_message_.c_str();
-    }
-  } catch (const std::exception &error) {
-    what_message_ =
-        "failed to build diagnostic_information in my_error::what(): ";
-    what_message_ += error.what();
-    return what_message_.c_str();
-  } catch (...) {
-    what_message_ =
-        "failed to build diagnostic_information in my_error::what(): "
-        "unknown exception";
-    return what_message_.c_str();
+auto my_error::what() const noexcept -> const char * {
+  if (const std::string *message =
+          boost::get_error_info<errinfo_message>(*this)) {
+    return message->c_str();
   }
-  what_message_ = "my_error";
-  return what_message_.c_str();
+  return "my_error";
 }
 
 } // namespace core::exceptions

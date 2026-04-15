@@ -185,11 +185,6 @@ cmake --install out/build/clang-debug-static
 - clang-release-static
 - clang-release-shared
 
-#### tidy 用 build preset
-- clangcl-debug-tidy
-- clangcl-debug-tidy-dll
-- clang-debug-tidy
-
 #### format 用 build preset
 - format (Windows)
 - format-linux (Linux)
@@ -260,6 +255,7 @@ ctest --preset clang-release-static
 - CMake オプション ENABLE_AUTO_CLANG_FORMAT が ON のとき、app/tests ビルド前に format ターゲットを実行します。
 - format ターゲットは format-app + core-format + tests-format の集約です。
 - clang-format が見つからない場合は警告を出してスキップします。
+- CMAKE_EXPORT_COMPILE_COMMANDS が ON のとき、ビルド時に root の compile_commands.json にも同期します。
 
 明示的に無効化する例:
 ```powershell
@@ -276,7 +272,7 @@ cmake --preset clangcl-debug-static -DENABLE_AUTO_CLANG_FORMAT=OFF
 - リビルド: clang-cl / MSVC (Debug/Release × static/dll)
 - インストール: clang-cl / MSVC (Debug/Release × static/dll)
 - テスト: CTest (clang-cl / MSVC × Debug/Release × static/dll)
-- 補助: 静的解析 (clang-tidy static/dll), フォーマット
+- 補助: 静的解析 (clang-tidy), フォーマット
 - Linux / WSL2: clang (Debug/Release × static/shared) の構成・ビルド・クリーン・リビルド・インストール・テスト
 
 例:
@@ -285,3 +281,25 @@ cmake --preset clangcl-debug-static -DENABLE_AUTO_CLANG_FORMAT=OFF
 - CMake: クリーン (MSVC Release dll)
 - CMake: インストール (clang-cl Debug static)
 - CTest: テスト (clang-cl Debug static)
+- clang-tidy (project sources)
+- clang-tidy (project sources + analyzer)
+
+clang-tidy タスクの使い分け:
+- clang-tidy (project sources): src と libs 配下の自前ソースだけを対象に、clang-analyzer を外した軽量チェックを -fix 付きで実行します。
+- clang-tidy (project sources + analyzer): 同じ対象範囲に対して clang-analyzer 系チェックだけを実行します。軽量タスクと役割を分け、依存ヘッダ由来のノイズを抑えます。
+
+PowerShell セッションの中で手動実行する場合の例:
+```powershell
+$checks = '-*,clang-analyzer-*'
+$headerFilter = '^(src|libs/(comm|core)/(src|include))/'
+Get-ChildItem -Recurse -Include *.cpp,*.cxx,*.cc,*.c -Path src,libs |
+    Where-Object { !$_.PSIsContainer -and ($_.FullName -notmatch 'tests') } |
+    ForEach-Object {
+        clang-tidy $_.FullName -p out/build/clangcl-debug-static --checks=$checks --header-filter=$headerFilter --quiet
+    }
+```
+
+PowerShell の外から 1 コマンドで呼ぶ場合の例:
+```powershell
+pwsh -Command '$checks = ''-*,clang-analyzer-*''; $headerFilter = ''^(src|libs/(comm|core)/(src|include))/''; Get-ChildItem -Recurse -Include *.cpp,*.cxx,*.cc,*.c -Path src,libs | Where-Object { !$_.PSIsContainer -and ($_.FullName -notmatch ''tests'') } | ForEach-Object { clang-tidy $_.FullName -p out/build/clangcl-debug-static --checks=$checks --header-filter=$headerFilter --quiet }'
+```

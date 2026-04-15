@@ -61,7 +61,7 @@ public:
    * @details
    * 現状の実装は空で、将来の拡張ポイントとして定義されている。
    */
-  void run();
+  static void run();
 };
 
 } // namespace core

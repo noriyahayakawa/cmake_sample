@@ -79,6 +79,8 @@ TEST(options_test, input_file_reflects_loaded_content) {
       boost::filesystem::temp_directory_path() /
       boost::filesystem::unique_path("settings-%%%%-%%%%.json");
 
+  constexpr char kHelloVersion[] = "9.9";
+
   {
     std::ofstream ofs(temp_path.string(), std::ios::binary);
     ASSERT_TRUE(ofs.is_open());
@@ -86,9 +88,9 @@ TEST(options_test, input_file_reflects_loaded_content) {
   }
 
   core::settings::options::instance().read_input_file(temp_path);
-  const auto &f = core::settings::options::instance().input_file();
-  EXPECT_EQ(f.commons.app_name, "hello");
-  EXPECT_EQ(f.commons.version, "9.9");
+  const auto &input_file = core::settings::options::instance().input_file();
+  EXPECT_EQ(input_file.commons.app_name, "hello");
+  EXPECT_EQ(input_file.commons.version, kHelloVersion);
 
   boost::system::error_code ec;
   boost::filesystem::remove(temp_path, ec);
@@ -133,18 +135,18 @@ TEST(options_test, read_json_with_communications_section) {
       "communications": {
         "server": {"enable":true,"id":"srv","service":"8080"},
         "clients": [
-          {"enable":true,"id":"c1","address":"127.0.0.1","service":"9000"}
+          {"enable":true,"id":"c1","host":"127.0.0.1","service":"9000"}
         ]
       }
     })";
   }
 
   core::settings::options::instance().read_input_file(temp_path);
-  const auto &f = core::settings::options::instance().input_file();
-  EXPECT_TRUE(f.communications.server.enable);
-  EXPECT_EQ(f.communications.server.id, "srv");
-  ASSERT_EQ(f.communications.clients.size(), 1u);
-  EXPECT_EQ(f.communications.clients[0].host, "127.0.0.1");
+  const auto &input_file = core::settings::options::instance().input_file();
+  EXPECT_TRUE(input_file.communications.server.enable);
+  EXPECT_EQ(input_file.communications.server.id, "srv");
+  ASSERT_EQ(input_file.communications.clients.size(), 1u);
+  EXPECT_EQ(input_file.communications.clients[0].host, "127.0.0.1");
 
   boost::system::error_code ec;
   boost::filesystem::remove(temp_path, ec);

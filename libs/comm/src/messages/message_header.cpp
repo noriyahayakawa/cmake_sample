@@ -17,12 +17,12 @@ namespace comm::messages {
  * @param t 設定するメッセージ型文字列。
  * @throws std::logic_error 文字列幅が `type_size_` 以上の場合。
  */
-    void message_header::message_type(const std::string &t) {
-        if (t.size() >= type_size_) {
+    void message_header::message_type(const std::string &type) {
+        if (type.size() >= type_size_) {
             boost::throw_exception(std::logic_error(
                 "message_type: 文字列幅が最大サイズを超えています"));
         }
-        message_type_ = t;
+        message_type_ = type;
     }
 
 /**

@@ -6,8 +6,14 @@ if(POLICY CMP0167)
 endif()
 
 project(cmake_sample LANGUAGES CXX)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# set(CMAKE_CXX_CLANG_TIDY
+#   clang-tidy;
+#   --extra-arg=/EHsc;
+#   --extra-arg-before=--driver-mode=cl
+# )
 option(ENABLE_AUTO_CLANG_FORMAT "Run clang-format before building targets" OFF)
 
 include(CTest)
@@ -49,6 +55,16 @@ if(CLANG_FORMAT_EXE)
   add_custom_target(format DEPENDS format-app)
 elseif(ENABLE_AUTO_CLANG_FORMAT)
   message(WARNING "ENABLE_AUTO_CLANG_FORMAT は ON ですが、clang-format が見つかりませんでした。自動整形は無効になります。")
+endif()
+
+if(CMAKE_EXPORT_COMPILE_COMMANDS)
+  add_custom_target(sync-compile-commands ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      ${CMAKE_BINARY_DIR}/compile_commands.json
+      ${CMAKE_SOURCE_DIR}/compile_commands.json
+    COMMENT "Syncing compile_commands.json to source root"
+    VERBATIM
+  )
 endif()
 
 add_subdirectory(tests)

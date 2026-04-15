@@ -40,7 +40,8 @@ public:
    * `co_spawn` の引数に指定することで、`cancel()` によるキャンセルが有効になる。
    * @return 非同期処理を表す awaitable オブジェクト。
    */
-  boost::asio::awaitable<void> start_accepting(const std::string &service);
+  static boost::asio::awaitable<void>
+  start_accepting(const std::string &service);
 
   /**
    * @brief accept ループをキャンセルする。

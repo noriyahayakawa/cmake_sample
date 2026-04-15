@@ -12,6 +12,9 @@
 #include "settings/options.hpp"
 #include "student_council.hpp"
 #include <iostream>
+#include <limits>
+#include <span>
+#include <string>
 
 #include <boost/filesystem.hpp>
 #include <boost/functional.hpp>
